@@ -50,21 +50,29 @@ Log file: <ACTUAL_LOG_PATH>
 
 ### Phase 1: Create Directory Structure
 
-**Skill Invoked**: Use Python structure generator
+**REQUIRED ACTION**: Execute the Python structure generator script using the Bash tool.
 
+**Command to execute** (use Bash tool):
 ```bash
-python lib/generators/structure_generator.py <repo-path>
+cd <repo-path> && python3 ${CLAUDE_PLUGIN_ROOT}/lib/generators/structure_generator.py .
 ```
 
-**Output**:
-- Creates <DIRECTORY_COUNT> directories
-- Creates <FILE_COUNT> template files with frontmatter
-- Validates structure
+**IMPORTANT**: 
+- You MUST use the Bash tool to execute this Python script
+- Do NOT manually create the directory structure
+- The script creates the required agentic/ directory structure automatically
+- `${CLAUDE_PLUGIN_ROOT}` resolves to the plugin installation directory
 
-**Logged** (via MetricsLogger):
+**Expected Output** (from script):
+- Creates 13 directories under `agentic/`
+- Creates 18 template files with initial content
+- Validates structure was created correctly
+
+**Log the results**:
 - Tool used: structure_generator.py
-- Directories created: <ACTUAL_COUNT>
-- Files created: <ACTUAL_COUNT>
+- Directories created: (actual count from script output)
+- Files created: (actual count from script output)
+- Execution time: (measure duration)
 
 ### Phase 2: Generate Core Documentation
 
