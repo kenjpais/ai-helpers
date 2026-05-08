@@ -52,27 +52,61 @@ Log file: <ACTUAL_LOG_PATH>
 
 **REQUIRED ACTION**: Execute the Python structure generator script using the Bash tool.
 
-**Command to execute** (use Bash tool):
+**DO NOT manually create directories with mkdir** - use the Python script instead.
+
+**Command to execute** (copy this exact code block using Bash tool):
+
 ```bash
-cd <repo-path> && python3 ${CLAUDE_PLUGIN_ROOT}/lib/generators/structure_generator.py .
+# Locate the Python structure generator script
+STRUCTURE_GEN="${CLAUDE_PLUGIN_ROOT}/lib/generators/structure_generator.py"
+if [ ! -f "$STRUCTURE_GEN" ]; then
+  STRUCTURE_GEN=$(find ~/.claude/plugins -type f -path "*/agentic-docs/lib/generators/structure_generator.py" 2>/dev/null | sort | head -1)
+fi
+if [ -z "$STRUCTURE_GEN" ] || [ ! -f "$STRUCTURE_GEN" ]; then 
+  echo "ERROR: structure_generator.py not found in plugin installation" >&2
+  exit 2
+fi
+
+# Execute the script in the target repository
+cd <repo-path> && python3 "$STRUCTURE_GEN" .
 ```
 
-**IMPORTANT**: 
-- You MUST use the Bash tool to execute this Python script
-- Do NOT manually create the directory structure
-- The script creates the required agentic/ directory structure automatically
-- `${CLAUDE_PLUGIN_ROOT}` resolves to the plugin installation directory
+**Replace `<repo-path>`** with the actual repository path provided by the user.
+
+**Why use the script**:
+- ✅ Creates 13 directories + 18 files in one atomic operation
+- ✅ Validates structure was created correctly
+- ✅ Provides clear progress output with emoji indicators
+- ✅ Much faster than 31 individual tool calls
+- ✅ Prevents errors from partial creation
 
 **Expected Output** (from script):
-- Creates 13 directories under `agentic/`
-- Creates 18 template files with initial content
-- Validates structure was created correctly
+```
+📁 Creating agentic/ directory structure in: .
+
+  ✅ Created: agentic/
+  ✅ Created: agentic/design-docs/
+  ... (13 directories total)
+  
+  ✅ Created: AGENTS.md
+  ✅ Created: ARCHITECTURE.md
+  ... (18 files total)
+
+✅ Directory structure created successfully
+   Directories: 13
+   Files: 18
+
+🔍 Validating structure...
+✅ Structure validation PASSED
+```
 
 **Log the results**:
-- Tool used: structure_generator.py
-- Directories created: (actual count from script output)
-- Files created: (actual count from script output)
+- Tool used: Bash (executing structure_generator.py)
+- Script path: (from $STRUCTURE_GEN variable)
+- Directories created: 13
+- Files created: 18
 - Execution time: (measure duration)
+- Exit code: 0 (success)
 
 ### Phase 2: Generate Core Documentation
 
