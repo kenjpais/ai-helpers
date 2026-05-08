@@ -76,9 +76,10 @@ def test_is_agentic_doc_path():
 
 
 def test_extract_file_access():
-    """Test file access extraction from JSONL line."""
+    """Test file access extraction from JSONL line (legacy format)."""
     scraper = SessionScraper()
 
+    # Test legacy format (top-level tool_use)
     line = json.dumps({
         "type": "tool_use",
         "name": "Read",
@@ -86,13 +87,38 @@ def test_extract_file_access():
         "timestamp": "2026-05-08T10:00:00Z",
     })
 
-    access = scraper.extract_file_accesses_from_log_line(line, "test-session", 1)
+    accesses = scraper.extract_file_accesses_from_log_line(line, "test-session", 1)
 
-    assert access is not None
+    assert len(accesses) == 1
+    access = accesses[0]
     assert access.file_path == "/repo/agentic/AGENTS.md"
     assert access.access_type == "read"
     assert access.session_id == "test-session"
     assert access.sequence_number == 1
+
+    # Test Claude Code format (nested in message.content)
+    line = json.dumps({
+        "type": "assistant",
+        "timestamp": "2026-05-08T10:00:00Z",
+        "message": {
+            "content": [
+                {
+                    "type": "tool_use",
+                    "name": "Read",
+                    "input": {"file_path": "/repo/agentic/ARCHITECTURE.md"}
+                }
+            ]
+        }
+    })
+
+    accesses = scraper.extract_file_accesses_from_log_line(line, "test-session", 2)
+
+    assert len(accesses) == 1
+    access = accesses[0]
+    assert access.file_path == "/repo/agentic/ARCHITECTURE.md"
+    assert access.access_type == "read"
+    assert access.session_id == "test-session"
+    assert access.sequence_number == 2
 
 
 def test_scrape_session_file():

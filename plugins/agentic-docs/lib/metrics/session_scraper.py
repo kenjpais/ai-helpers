@@ -127,9 +127,9 @@ class SessionScraper:
         line: str,
         session_id: str,
         sequence_number: int
-    ) -> Optional[FileAccess]:
+    ) -> List[FileAccess]:
         """
-        Extract file access from a JSONL log line.
+        Extract file accesses from a JSONL log line.
 
         Args:
             line: JSONL log line
@@ -137,43 +137,71 @@ class SessionScraper:
             sequence_number: Sequence number in session
 
         Returns:
-            FileAccess object if line contains agentic doc access, None otherwise
+            List of FileAccess objects (may be empty)
         """
         try:
             entry = json.loads(line)
         except json.JSONDecodeError:
-            return None
+            return []
 
-        # Check if this is a tool call
-        if entry.get("type") != "tool_use":
-            return None
+        accesses = []
 
-        # Extract tool name and parameters
-        tool_name = entry.get("name", "")
-        if tool_name not in ["Read", "Write", "Edit"]:
-            return None
-
-        # Extract file path from parameters
-        params = entry.get("input", {})
-        file_path = params.get("file_path")
-
-        if not file_path or not self.is_agentic_doc_path(file_path):
-            return None
-
-        # Extract timestamp
+        # Extract timestamp from entry (used for all tool calls in this entry)
         timestamp_str = entry.get("timestamp")
         if timestamp_str:
             timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
         else:
             timestamp = datetime.now()
 
-        return FileAccess(
-            file_path=file_path,
-            timestamp=timestamp,
-            sequence_number=sequence_number,
-            access_type=tool_name.lower(),
-            session_id=session_id,
-        )
+        # Check if entry contains a message with content (Claude Code format)
+        if "message" in entry and "content" in entry["message"]:
+            content_items = entry["message"]["content"]
+            if not isinstance(content_items, list):
+                content_items = [content_items]
+
+            for item in content_items:
+                if not isinstance(item, dict):
+                    continue
+
+                # Check if this is a tool use
+                if item.get("type") != "tool_use":
+                    continue
+
+                # Extract tool name and parameters
+                tool_name = item.get("name", "")
+                if tool_name not in ["Read", "Write", "Edit"]:
+                    continue
+
+                # Extract file path from parameters
+                params = item.get("input", {})
+                file_path = params.get("file_path")
+
+                if file_path and self.is_agentic_doc_path(file_path):
+                    accesses.append(FileAccess(
+                        file_path=file_path,
+                        timestamp=timestamp,
+                        sequence_number=sequence_number,
+                        access_type=tool_name.lower(),
+                        session_id=session_id,
+                    ))
+
+        # Legacy format: top-level tool_use entries
+        elif entry.get("type") == "tool_use":
+            tool_name = entry.get("name", "")
+            if tool_name in ["Read", "Write", "Edit"]:
+                params = entry.get("input", {})
+                file_path = params.get("file_path")
+
+                if file_path and self.is_agentic_doc_path(file_path):
+                    accesses.append(FileAccess(
+                        file_path=file_path,
+                        timestamp=timestamp,
+                        sequence_number=sequence_number,
+                        access_type=tool_name.lower(),
+                        session_id=session_id,
+                    ))
+
+        return accesses
 
     def scrape_session_file(self, session_file: Path) -> SessionTelemetry:
         """
@@ -195,13 +223,13 @@ class SessionScraper:
         with open(session_file, 'r', encoding='utf-8') as f:
             for line in f:
                 sequence_number += 1
-                access = self.extract_file_accesses_from_log_line(
+                accesses = self.extract_file_accesses_from_log_line(
                     line,
                     session_id,
                     sequence_number
                 )
 
-                if access:
+                for access in accesses:
                     file_accesses.append(access)
 
                     if start_time is None:
