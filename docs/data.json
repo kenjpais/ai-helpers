@@ -1628,6 +1628,22 @@
     {
       "commands": [
         {
+          "argument_hint": "<owner/repo> [issue-number]",
+          "description": "Automatically triage and label GitHub issues using AI analysis",
+          "name": "issue-triage",
+          "synopsis": "/github:issue-triage <owner/repo> [issue-number]"
+        }
+      ],
+      "description": "GitHub automation and workflow utilities for issue management and triage",
+      "has_readme": true,
+      "hooks": [],
+      "name": "github",
+      "skills": [],
+      "version": "0.0.1"
+    },
+    {
+      "commands": [
+        {
           "argument_hint": "[namespace]",
           "description": "Check Gateway API resources status in the cluster",
           "name": "check",
@@ -1790,6 +1806,96 @@
       "name": "marketplace-ops",
       "skills": [],
       "version": "0.1.2"
+    },
+    {
+      "commands": [],
+      "description": "Complete lifecycle management for agentic documentation: generation, validation, evaluation, and knowledge graph creation",
+      "has_readme": true,
+      "hooks": [],
+      "name": "agentic-docs",
+      "skills": [
+        {
+          "description": "Orchestrate complete agentic documentation generation from repository files",
+          "id": "create",
+          "name": "agentic-docs:create"
+        },
+        {
+          "description": "Generate NetworkX knowledge graph from existing agentic documentation",
+          "id": "create-knowledge-graph",
+          "name": "agentic-docs:create-knowledge-graph"
+        },
+        {
+          "description": "Evaluate documentation quality using behavioral validation with multi-run variance testing, grounding validation, and weighted scoring",
+          "id": "evaluate",
+          "name": "agentic-docs:evaluate"
+        },
+        {
+          "description": "Generate AGENTS.md file for agentic documentation",
+          "id": "generate-agents-md",
+          "name": "generate-agents-md"
+        },
+        {
+          "description": "Generate ARCHITECTURE.md file for agentic documentation",
+          "id": "generate-architecture-md",
+          "name": "generate-architecture-md"
+        },
+        {
+          "description": "Generate component-architecture.md file for agentic documentation",
+          "id": "generate-component-architecture-md",
+          "name": "generate-component-architecture-md"
+        },
+        {
+          "description": "Generate core-beliefs.md file for agentic documentation",
+          "id": "generate-core-beliefs-md",
+          "name": "generate-core-beliefs-md"
+        },
+        {
+          "description": "Generate data-flow.md file for agentic documentation",
+          "id": "generate-data-flow-md",
+          "name": "generate-data-flow-md"
+        },
+        {
+          "description": "Generate DESIGN.md file for agentic documentation",
+          "id": "generate-design-md",
+          "name": "generate-design-md"
+        },
+        {
+          "description": "Generate DEVELOPMENT.md file for agentic documentation",
+          "id": "generate-development-md",
+          "name": "generate-development-md"
+        },
+        {
+          "description": "Generate glossary.md file for agentic documentation",
+          "id": "generate-glossary-md",
+          "name": "generate-glossary-md"
+        },
+        {
+          "description": "Generate QUALITY_SCORE.md file for agentic documentation",
+          "id": "generate-quality-score-md",
+          "name": "generate-quality-score-md"
+        },
+        {
+          "description": "Generate RELIABILITY.md file for agentic documentation",
+          "id": "generate-reliability-md",
+          "name": "generate-reliability-md"
+        },
+        {
+          "description": "Generate SECURITY.md file for agentic documentation",
+          "id": "generate-security-md",
+          "name": "generate-security-md"
+        },
+        {
+          "description": "Generate TESTING.md file for agentic documentation",
+          "id": "generate-testing-md",
+          "name": "generate-testing-md"
+        },
+        {
+          "description": "Validate agentic documentation against quality standards with user-configurable parameters",
+          "id": "validate",
+          "name": "agentic-docs:validate"
+        }
+      ],
+      "version": "0.1.0"
     }
   ]
 }

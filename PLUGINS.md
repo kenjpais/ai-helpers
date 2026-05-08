@@ -2,7 +2,6 @@
 
 This document lists all available Claude Code plugins and their commands in the ai-helpers repository.
 
-- [Agentic Docs](#agentic-docs-plugin)
 - [Agendas](#agendas-plugin)
 - [Operator Dashboard](#operator-dashboard-plugin)
 - [Bigquery](#bigquery-plugin)
@@ -38,18 +37,6 @@ This document lists all available Claude Code plugins and their commands in the 
 - [Utils](#utils-plugin)
 - [Workspaces](#workspaces-plugin)
 - [Yaml](#yaml-plugin)
-
-### Agentic Docs Plugin
-
-Complete lifecycle management for agentic documentation: generation, validation, evaluation, and knowledge graph creation
-
-**Commands:**
-- **`/agentic-docs:create` `[<repo-path>]`** - Generate complete agentic documentation for a repository from repository files only
-- **`/agentic-docs:validate` `[<repo-path>]`** - Validate agentic documentation against quality standards with user-configurable parameters
-- **`/agentic-docs:evaluate` `[<repo-path>]`** - Test documentation quality with coding scenarios using transparent multi-agent execution
-- **`/agentic-docs:create-knowledge-graph` `[<repo-path>]`** - Generate knowledge graph from existing agentic documentation
-
-See [plugins/agentic-docs/README.md](plugins/agentic-docs/README.md) for detailed documentation.
 
 ### Agendas Plugin
 
@@ -176,7 +163,6 @@ Git workflow automation and utilities
 
 See [plugins/git/README.md](plugins/git/README.md) for detailed documentation.
 
-<<<<<<< HEAD
 ### Github Plugin
 
 GitHub automation and workflow utilities
@@ -185,7 +171,7 @@ GitHub automation and workflow utilities
 - **`/github:issue-triage` `<owner/repo> [issue-number]`** - Automatically triage and label GitHub issues using AI analysis
 
 See [plugins/github/README.md](plugins/github/README.md) for detailed documentation.
-=======
+
 ### Gwapi Plugin
 
 Gateway API management for Kubernetes/OpenShift clusters
@@ -196,7 +182,6 @@ Gateway API management for Kubernetes/OpenShift clusters
 - **`/gwapi:install` `[namespace]`** - Install Gateway API resources to a Kubernetes/OpenShift cluster
 
 See [plugins/gwapi/README.md](plugins/gwapi/README.md) for detailed documentation.
->>>>>>> 0948119635915e5deecfed07dd58d5a6d5e3c293
 
 ### Hcp Plugin
 
