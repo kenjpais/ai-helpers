@@ -147,6 +147,35 @@ After every command execution, the system displays:
 - Files accessed
 - AI-docs workflow analytics
 
+### Session Metrics Scraping
+
+The plugin includes a session scraper that extracts file access patterns from Claude Code session logs:
+
+```python
+from lib.metrics.session_scraper import SessionScraper
+
+# Scrape all sessions
+scraper = SessionScraper()
+telemetry_list = scraper.scrape_all_sessions()
+
+# Export to JSON
+scraper.export_to_json(telemetry_list, Path("session_telemetry.json"))
+
+# Aggregate metrics
+metrics = scraper.aggregate_metrics(telemetry_list)
+print(f"Total sessions: {metrics['total_sessions']}")
+print(f"Avg accesses/session: {metrics['avg_accesses_per_session']:.1f}")
+```
+
+**Metrics extracted:**
+- File access patterns (which docs accessed, in what order)
+- Entry points (AGENTS.md vs direct search)
+- Navigation sequences with timestamps
+- Retrieval timing (time spent retrieving vs generating)
+- Most accessed documentation files
+
+**Data source:** `~/.claude/projects/**/*.jsonl` (Claude Code session logs)
+
 ## Quality Guarantees
 
 ### Navigation Constraint

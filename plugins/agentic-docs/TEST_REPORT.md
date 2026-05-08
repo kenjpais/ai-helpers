@@ -256,7 +256,24 @@ Data Sources:
   • tests/
 ```
 
-**Optional Enhancement**: Session metrics scraping (PR #450 pattern) can be added later as `lib/metrics/session_scraper.py` to parse `~/.claude/projects/**/*.jsonl` files.
+**✅ Enhancement Implemented**: Session metrics scraping (PR #450 pattern) has been implemented as `lib/metrics/session_scraper.py` to parse `~/.claude/projects/**/*.jsonl` files.
+
+**Features**:
+- Extracts file access patterns from Claude Code session logs
+- Tracks navigation sequences with timestamps
+- Identifies entry points (AGENTS.md vs direct search)
+- Aggregates metrics across multiple sessions
+- Exports to JSON for analysis
+
+**Test Results**: All 6 tests passing
+```python
+✅ test_is_agentic_doc_path
+✅ test_extract_file_access
+✅ test_scrape_session_file
+✅ test_navigation_sequences
+✅ test_aggregate_metrics
+✅ test_export_to_json
+```
 
 ---
 
@@ -438,6 +455,7 @@ plugins/agentic-docs/
 | structure_validator.py | ✅ PASS | Executed on /tmp/test-agentic-repo |
 | execution_metrics.py | ✅ PASS | Python interactive test |
 | logger.py | ✅ PASS | Python interactive test |
+| session_scraper.py | ✅ PASS | pytest (6/6 tests passed) |
 
 ### Integration Tests
 
@@ -458,10 +476,11 @@ plugins/agentic-docs/
 
 ### Short-Term (Optional Enhancements)
 
-1. **Add session metrics scraping** (PR #450 pattern)
-   - Create `lib/metrics/session_scraper.py`
-   - Parse `~/.claude/projects/**/*.jsonl`
-   - Extract file access patterns, navigation sequences
+1. ✅ **Session metrics scraping implemented** (PR #450 pattern)
+   - Created `lib/metrics/session_scraper.py`
+   - Parses `~/.claude/projects/**/*.jsonl`
+   - Extracts file access patterns, navigation sequences
+   - All 6 tests passing
 
 2. **Test remaining commands**
    - `/agentic-docs:validate` on a real repository
@@ -509,6 +528,7 @@ The plugin is **production-ready** and has been **successfully tested**:
 - ✅ Structure validator tested and verified
 - ✅ Execution metrics tested and verified
 - ✅ Logger tested and verified
+- ✅ Session scraper tested and verified (6/6 tests passing)
 
 **Next Steps**: User testing of remaining 3 commands.
 
