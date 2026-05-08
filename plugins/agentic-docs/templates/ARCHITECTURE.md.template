@@ -1,0 +1,64 @@
+# {PROJECT_NAME} - Architecture Overview
+
+**Repository**: {REPOSITORY_NAME}
+**Last Updated**: {LAST_UPDATED}
+
+## System Structure
+
+{SYSTEM_DIAGRAM}
+
+## Repository Structure
+
+```text
+{REPOSITORY_TREE}
+```
+
+## Code Organization
+
+### {PRIMARY_LAYER_1}
+
+**Location**: `{PRIMARY_LAYER_1_PATH}`
+
+{PRIMARY_LAYER_1_DESCRIPTION}
+
+### {PRIMARY_LAYER_2}
+
+**Location**: `{PRIMARY_LAYER_2_PATH}`
+
+{PRIMARY_LAYER_2_DESCRIPTION}
+
+### {PRIMARY_LAYER_3}
+
+**Location**: `{PRIMARY_LAYER_3_PATH}`
+
+{PRIMARY_LAYER_3_DESCRIPTION}
+
+## Configuration Files
+
+| File | Purpose |
+|------|---------|
+{CONFIGURATION_TABLE}
+
+## Build Artifacts
+
+{BUILD_ARTIFACTS_DESCRIPTION}
+
+## Documentation
+
+| Type | Location |
+|------|----------|
+| Agentic Docs | `./agentic/` |
+| Design Docs | `./agentic/design-docs/` |
+| Domain Docs | `./agentic/domain/` |
+| ADRs | `./agentic/decisions/` |
+{ADDITIONAL_DOCS}
+
+## Key Files
+
+{KEY_FILES_LIST}
+
+## See Also
+
+- [Development Guide](./agentic/DEVELOPMENT.md)
+- [Design Philosophy](./agentic/DESIGN.md)
+- [Component Architecture](./agentic/design-docs/component-architecture.md)
