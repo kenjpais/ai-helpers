@@ -198,22 +198,45 @@ print(f"Avg accesses/session: {metrics['avg_accesses_per_session']:.1f}")
 
 ## Configuration
 
-### Validation Parameters
+All validation parameters are user-configurable through `config/validation.yaml`.
 
-Edit `config/validation.yaml` to customize:
-- Navigation depth (default: 3 hops)
-- Line budgets (AGENTS.md: 150, components: 100, concepts: 75)
-- Required directory structure
-- Quality score thresholds
-- Validation checks to enable/disable
+**The validation agent CANNOT modify this file** - you must edit it directly.
 
-### Example: Change Navigation Depth
+### Quick Configuration
+
+Edit the configuration file:
+
+```bash
+vim plugins/agentic-docs/config/validation.yaml
+```
+
+Common parameters:
+- **Navigation depth**: `navigation.max_hops` (default: 3)
+- **Line budgets**: `line_budget.agents_md` (default: 150)
+- **Quality threshold**: `quality_score.minimum_score` (default: 70)
+- **Coverage requirements**: `coverage.minimum_component_coverage` (default: 0.8)
+
+### Example: Relax Validation for WIP
 
 ```yaml
 # config/validation.yaml
 navigation:
-  max_hops: 4  # Changed from default 3
+  max_hops: 4  # Allow deeper navigation
+
+quality_score:
+  minimum_score: 50  # Lower threshold for work-in-progress
+
+coverage:
+  minimum_component_coverage: 0.5  # Allow 50% coverage
 ```
+
+### Comprehensive Guide
+
+See [CONFIGURATION.md](./CONFIGURATION.md) for:
+- Complete parameter reference
+- Common configuration scenarios
+- Troubleshooting guide
+- Immutability enforcement details
 
 ## Development
 
