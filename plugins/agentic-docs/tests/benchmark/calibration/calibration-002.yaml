@@ -1,0 +1,35 @@
+scenario:
+  id: "calibration-002"
+  description: "Calibration: Forbidden outcome detection"
+  category: "calibration"
+
+  input:
+    task_description: "Add error handling to the API endpoint"
+    context:
+      - "The API endpoint currently returns 200 for all requests"
+      - "Errors should be handled with appropriate status codes"
+
+  expected_outcomes:
+    - id: "mentions-status-codes"
+      description: "Plan mentions HTTP status codes"
+      assertion: "regex: status code|HTTP (4|5)\\d\\d"
+      weight: 1.0
+      critical: true
+
+  forbidden_outcomes:
+    - id: "recommends-suppressing-errors"
+      description: "Plan must not recommend suppressing error information"
+      assertion: "llm-rubric: The plan does NOT recommend hiding or suppressing error details from responses"
+
+  grounding:
+    required_components:
+      - "api-server"
+    forbidden_components: []
+
+  evaluation:
+    runs_per_scenario: 1
+    pass_threshold: 1.0
+    evaluator:
+      model: "claude-sonnet-4-6"
+      temperature: 0.0
+      prompt_version: "v2.1"

@@ -1,0 +1,90 @@
+scenario:
+  id: "scenario-014"
+  description: "Add monitoring endpoint with Prometheus format"
+  category: "api-integration"
+
+  input:
+    task_description: "Add a /metrics HTTP endpoint to the API server that exposes application metrics in Prometheus format"
+    context:
+      - "The application has an existing HTTP API server"
+      - "Monitoring is a priority for production deployments"
+      - "The team uses Prometheus for metrics collection"
+
+  expected_outcomes:
+    - id: "identifies-api-server-component"
+      description: "Plan identifies the API server as the component to modify"
+      assertion: "llm-rubric: The execution plan identifies the API server component as the location for implementing the /metrics endpoint"
+      weight: 2.0
+      critical: true
+
+    - id: "includes-prometheus-library"
+      description: "Plan includes adding a Prometheus client library dependency"
+      assertion: "llm-rubric: The execution plan includes adding or referencing a Prometheus client library as a dependency"
+      weight: 1.0
+      critical: false
+
+    - id: "defines-metrics-registration"
+      description: "Plan defines how metrics will be registered and exposed"
+      assertion: "llm-rubric: The execution plan describes how application metrics will be registered with the Prometheus registry"
+      weight: 1.0
+      critical: false
+
+    - id: "addresses-endpoint-implementation"
+      description: "Plan includes implementing the HTTP endpoint handler"
+      assertion: "llm-rubric: The execution plan includes implementing an HTTP handler for the /metrics endpoint"
+      weight: 2.0
+      critical: true
+
+    - id: "includes-testing-strategy"
+      description: "Plan includes testing the metrics endpoint"
+      assertion: "llm-rubric: The execution plan includes a strategy for testing the /metrics endpoint (unit tests or integration tests)"
+      weight: 1.0
+      critical: false
+
+    - id: "considers-security"
+      description: "Plan considers security implications of exposing metrics"
+      assertion: "llm-rubric: The execution plan mentions security considerations such as authentication, authorization, or network exposure"
+      weight: 3.0
+      critical: false
+
+  forbidden_outcomes:
+    - id: "invents-metrics-coordinator"
+      description: "Plan must not reference non-existent MetricsCoordinatorService"
+      assertion: "not-contains: MetricsCoordinatorService"
+
+    - id: "recommends-exposing-secrets"
+      description: "Plan must not recommend exposing sensitive data in metrics"
+      assertion: "llm-rubric: The plan does NOT recommend exposing passwords, tokens, API keys, or other sensitive data in metrics"
+
+    - id: "recommends-disabling-auth"
+      description: "Plan must not recommend disabling authentication for metrics endpoint"
+      assertion: "llm-rubric: The plan does NOT recommend making the metrics endpoint completely public without any access controls"
+
+  grounding:
+    required_components:
+      - "api-server"
+    forbidden_components:
+      - "MetricsCoordinatorService"
+      - "legacy-monitoring-service"
+
+  evaluation:
+    runs_per_scenario: 3
+    pass_threshold: 0.67  # Require 2/3 runs to pass
+    evaluator:
+      model: "claude-sonnet-4-6"
+      temperature: 0.0
+      prompt_version: "v2.1"
+
+# Assertion variants for diversification (randomly selected per run)
+assertion_variants:
+  includes-testing-strategy:
+    - "llm-rubric: The execution plan includes a strategy for testing the /metrics endpoint"
+    - "llm-rubric: The plan discusses how to validate the metrics endpoint behavior"
+    - "llm-rubric: The plan proposes an approach to verify the /metrics endpoint works correctly"
+    - "llm-rubric: The plan includes considerations for testing metrics exposure"
+
+  considers-security:
+    - "llm-rubric: The execution plan mentions security considerations for the metrics endpoint"
+    - "llm-rubric: The plan discusses access control or authentication for metrics"
+    - "llm-rubric: The plan addresses security implications of exposing application metrics"
+    - "llm-rubric: The plan considers who should have access to the metrics endpoint"

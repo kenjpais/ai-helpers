@@ -1,0 +1,152 @@
+# Evaluation Framework Configuration
+# Version: 2.0
+
+# Evaluator Settings
+evaluator:
+  model: "claude-sonnet-4-6"
+  temperature: 0.0
+  prompt_version: "v2.1"
+  max_retries: 3
+  timeout_seconds: 120
+
+# Multi-Run Configuration
+multi_run:
+  default_runs_per_scenario: 3
+  default_pass_threshold: 0.67  # Require 67% of runs to pass
+  enable_variance_tracking: true
+  enable_flaky_detection: true
+
+# Grounding Validation
+grounding:
+  enabled: true
+  component_sources:
+    - "ARCHITECTURE.md"
+    - "agentic/design-docs/components/*.md"
+    - "agentic/domain/*.md"
+  hallucination_detection: true
+  required_component_enforcement: true
+  forbidden_component_enforcement: true
+
+# Assertion Diversification
+assertion_diversification:
+  enabled: true
+  deterministic_randomness: true  # Use run_num as seed
+  log_selected_variants: true
+
+# Efficiency Telemetry
+efficiency_telemetry:
+  enabled: true
+  track_file_reads: true
+  track_tool_calls: true
+  track_hallucinated_accesses: true
+  compute_relevance_ratio: true
+  compute_efficiency_score: true
+  log_to_metrics: true
+  # IMPORTANT: Telemetry only - does NOT affect pass/fail
+
+# Category Stratification
+stratification:
+  enabled: true
+  categories:
+    - "architecture-reasoning"
+    - "dependency-resolution"
+    - "security"
+    - "migration-planning"
+    - "retrieval"
+    - "api-integration"
+    - "concurrency"
+    - "refactoring"
+    - "testing"
+    - "performance"
+  report_per_category: true
+  require_category_threshold: false  # Don't fail if category underperforms
+
+# Calibration
+calibration:
+  enabled: true
+  run_before_evaluation: true
+  calibration_dir: "tests/benchmark/calibration/"
+  expected_pass_rate: 0.95
+  fail_on_drift: true
+  log_calibration_results: true
+
+# Leakage Resistance
+leakage_resistance:
+  opaque_scenario_ids: true  # Require scenario-NNN format
+  sandbox_coding_agent: true
+  blocked_paths:
+    - "tests/benchmark/"
+    - "promptfooconfig.yaml"
+    - ".work/evaluate/"
+  adversarial_scenarios_enabled: true
+
+# Forbidden Outcomes
+forbidden_outcomes:
+  enabled: true
+  auto_fail_on_violation: true
+  log_violations: true
+
+# Weighted Scoring
+weighted_scoring:
+  enabled: true
+  default_weight: 1.0
+  critical_auto_fail: true
+  log_weighted_scores: true
+
+# Logging
+logging:
+  log_dir: "logs/"
+  log_file_prefix: "agentic-docs-evaluate-"
+  log_level: "INFO"
+  log_evaluator_responses: true  # Log llm-rubric raw responses
+  log_efficiency_telemetry: true
+  log_grounding_details: true
+
+# Metrics
+metrics:
+  metrics_dir: "logs/"
+  metrics_file_suffix: ".metrics.json"
+  include_run_details: true
+  include_efficiency_telemetry: true
+  include_calibration_results: true
+
+# Display
+display:
+  use_display_script: true
+  display_script_path: "lib/display_metrics.py"
+  show_category_breakdown: true
+  show_efficiency_telemetry: false  # Don't show in main report
+  show_flaky_assertions: true
+
+# Assertion Types
+assertion_types:
+  deterministic:
+    - "regex"
+    - "contains"
+    - "not-contains"
+    - "json-schema"
+    - "javascript"
+    - "python"
+  probabilistic:
+    - "llm-rubric"
+
+# Pass Criteria
+pass_criteria:
+  overall_pass_threshold: 0.70  # 70% of scenarios must pass
+  category_minimum_threshold: 0.50  # 50% per category (if enforced)
+  calibration_pass_threshold: 0.95  # 95% calibration set must pass
+
+# Scenario Validation
+scenario_validation:
+  require_category: true
+  require_grounding_section: false  # Optional
+  require_evaluation_section: false  # Optional
+  allow_empty_forbidden_outcomes: true
+  max_expected_outcomes: 10
+  max_forbidden_outcomes: 5
+
+# Advanced Features
+advanced:
+  enable_parallel_evaluation: false  # Future: parallel scenario execution
+  enable_caching: false  # Future: cache execution plans
+  enable_regression_testing: false  # Future: detect regressions

@@ -10,6 +10,10 @@ trigger: /generate-testing-md
 
 Generate the `agentic/TESTING.md` file that documents the test strategy, test types, and how to run tests.
 
+## Template
+
+Uses `templates/TESTING.md.template` as the base structure (based on PR #437).
+
 ## Input
 
 - Repository path (required)
@@ -24,6 +28,7 @@ Generate the `agentic/TESTING.md` file that documents the test strategy, test ty
 ## Data Sources
 
 This skill reads from the following repository files:
+- `templates/TESTING.md.template` (template file)
 - test/ or tests/ directories
 - Makefile (test targets)
 - CI configuration (.github/workflows/, .gitlab-ci.yml, Jenkinsfile)

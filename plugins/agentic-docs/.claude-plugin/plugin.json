@@ -1,0 +1,8 @@
+{
+  "name": "agentic-docs",
+  "description": "Complete lifecycle management for agentic documentation: generation, validation, evaluation, and knowledge graph creation",
+  "version": "0.1.0",
+  "author": {
+    "name": "github.com/openshift-eng"
+  }
+}

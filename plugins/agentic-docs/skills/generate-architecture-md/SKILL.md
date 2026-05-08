@@ -10,8 +10,13 @@ trigger: /generate-architecture-md
 
 Generate the `ARCHITECTURE.md` file documenting the system structure with file paths and code organization.
 
+## Template
+
+Uses `templates/ARCHITECTURE.md.template` as the base structure (based on PR #437).
+
 ## Data Sources
 
+- `templates/ARCHITECTURE.md.template` (template file)
 - Repository directory structure
 - Main code directories (pkg/, cmd/, internal/, src/)
 - Configuration directories (config/, manifests/, deploy/)
