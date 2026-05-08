@@ -56,54 +56,86 @@ Read the following files:
 - Build scripts
 - Container configs
 
-### 3. Generate DEVELOPMENT.md Content
+### 3. Load Template
 
-**Prompt**:
-```
-Based on the repository build and development setup:
+Read the DEVELOPMENT.md template:
 
-Generate agentic/DEVELOPMENT.md covering:
-
-1. **Prerequisites**
-   - Required tools and versions (Go, Node.js, Python, etc.)
-   - System dependencies
-   - Environment requirements
-
-2. **Local Setup**
-   - Clone and initial setup steps
-   - Dependency installation
-   - Configuration files
-   - Environment variables
-
-3. **Build Commands**
-   - Local binary build
-   - Container image build
-   - Cross-compilation (if applicable)
-   - Build flags and options
-
-4. **Development Workflow**
-   - Code → Test → Lint → Commit cycle
-   - Hot reload/watch mode (if available)
-   - Development server
-   - Debugging setup
-
-5. **Common Tasks**
-   - Adding new dependencies
-   - Updating dependencies
-   - Running linters
-   - Code formatting
-
-6. **Troubleshooting**
-   - Common build errors
-   - Dependency issues
-   - Environment problems
-
-Use clear, actionable instructions. Target ~280 lines.
-
-Data sources: README.md, Makefile, package files
+```bash
+template_path="templates/DEVELOPMENT.md.template"
 ```
 
-### 4. Write File
+**Template Structure** (from PR #437):
+- Prerequisites section
+- Repository structure with ASCII tree
+- Development workflow
+- Common tasks
+- Build & release process
+- Project-specific notes
+
+### 4. Extract Repository Data
+
+**From Makefile**:
+- Build commands (`make build`, `make test`, `make lint`)
+- Test commands
+- Format commands
+- Install/update dependency commands
+
+**From Package Files**:
+- Language version (go.mod, package.json, pyproject.toml)
+- Dependencies list
+- Build tools
+
+**From README.md**:
+- Setup instructions
+- Prerequisites
+
+**From Build Scripts**:
+- Container build commands
+- Local build steps
+
+**From CI Configuration**:
+- CI build description
+- Release process
+
+### 5. Replace Template Placeholders
+
+Replace placeholders in template:
+
+| Placeholder | Source |
+|-------------|--------|
+| `{PROJECT_NAME}` | Repository name |
+| `{REPOSITORY_NAME}` | Full repo path |
+| `{PREREQUISITES_LIST}` | Extract from README, package files |
+| `{BUILD_COMMAND}` | From Makefile (primary build target) |
+| `{BUILD_OUTPUT_PATH}` | Detect from Makefile or infer |
+| `{REPO_TREE}` | Generate ASCII tree of repository |
+| `{LOCAL_BUILD_COMMAND}` | From Makefile |
+| `{TEST_COMMAND}` | From Makefile (test target) |
+| `{LOCAL_RUN_INSTRUCTIONS}` | Infer from binary location |
+| `{LOG_COMMAND}` | Language-specific log command |
+| `{DEBUGGER}` | Language-appropriate debugger |
+| `{DEBUG_COMMAND}` | Debugger command |
+| `{CODE_ORGANIZATION_DETAILS}` | Analyze directory structure |
+| `{ADD_DEPENDENCY_COMMAND}` | Language-specific (go get, npm install, pip install) |
+| `{UPDATE_DEPS_COMMAND}` | Language-specific update command |
+| `{LINT_COMMAND}` | From Makefile or infer |
+| `{FORMAT_COMMAND}` | From Makefile or infer |
+| `{LOCAL_BUILD_FULL}` | From Makefile |
+| `{CI_BUILD_DESCRIPTION}` | From CI config |
+| `{RELEASE_PROCESS}` | From README or CONTRIBUTING |
+| `{PROJECT_SPECIFIC_NOTES}` | Repository-specific quirks |
+
+**Template Processing**:
+```
+1. Read template file
+2. Extract all repository data
+3. Replace each {PLACEHOLDER} with actual value
+4. Generate final DEVELOPMENT.md content
+```
+
+**Target**: ~280 lines (as per template)
+
+### 6. Write File
 
 Write generated content to `agentic/DEVELOPMENT.md`
 
@@ -112,7 +144,7 @@ Write generated content to `agentic/DEVELOPMENT.md`
 - Lines generated: [count]
 - Data sources used: [list]
 
-### 5. Validate Output
+### 7. Validate Output
 
 Check that:
 - File was created successfully
