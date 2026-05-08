@@ -1,0 +1,33 @@
+scenario:
+  id: "add-monitoring-endpoint"
+  description: "Add a /metrics endpoint with Prometheus format"
+  input:
+    task_description: "Add a /metrics HTTP endpoint to the API server that exposes application metrics in Prometheus format"
+    context:
+      - "The application has an existing HTTP API server"
+      - "Monitoring is a priority for production deployments"
+      - "The team uses Prometheus for metrics collection"
+  expected_outcomes:
+    - id: "identifies-api-server-component"
+      description: "Plan identifies the API server as the component to modify"
+      assertion: "llm-rubric: The execution plan identifies the API server component as the location for implementing the /metrics endpoint"
+
+    - id: "includes-prometheus-library"
+      description: "Plan includes adding a Prometheus client library dependency"
+      assertion: "llm-rubric: The execution plan includes adding or referencing a Prometheus client library as a dependency"
+
+    - id: "defines-metrics-registration"
+      description: "Plan defines how metrics will be registered and exposed"
+      assertion: "llm-rubric: The execution plan describes how application metrics will be registered with the Prometheus registry"
+
+    - id: "addresses-endpoint-implementation"
+      description: "Plan includes implementing the HTTP endpoint handler"
+      assertion: "llm-rubric: The execution plan includes implementing an HTTP handler for the /metrics endpoint"
+
+    - id: "includes-testing-strategy"
+      description: "Plan includes testing the metrics endpoint"
+      assertion: "llm-rubric: The execution plan includes a strategy for testing the /metrics endpoint (unit tests or integration tests)"
+
+    - id: "considers-security"
+      description: "Plan considers security implications of exposing metrics"
+      assertion: "llm-rubric: The execution plan mentions security considerations such as authentication, authorization, or network exposure"

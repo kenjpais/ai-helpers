@@ -21,9 +21,14 @@ Generate the `agentic/DESIGN.md` file that documents the design philosophy and a
 - Logging of data sources used
 - Line count verification
 
+## Template
+
+Uses `templates/DESIGN.md.template` as the base structure (based on PR #437).
+
 ## Data Sources
 
 This skill reads from the following repository files:
+- `templates/DESIGN.md.template` (template file)
 - README.md (design overview)
 - docs/architecture.md or docs/design.md (if exists)
 - CONTRIBUTING.md (design principles)

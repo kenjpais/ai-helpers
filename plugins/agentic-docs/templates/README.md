@@ -48,9 +48,30 @@ Templates use placeholder syntax: `{PLACEHOLDER_NAME}`
 - `{LANGUAGE}` - Primary language (Go, Python, etc.)
 - `{DEBUGGER}` - Language-appropriate debugger
 
+## Which Skills Use Templates
+
+**5 skills use templates** (based on PR #437 structure):
+
+| Skill | Template | Output |
+|-------|----------|--------|
+| generate-agents-md | AGENTS.md.template | AGENTS.md |
+| generate-architecture-md | ARCHITECTURE.md.template | ARCHITECTURE.md |
+| generate-design-md | DESIGN.md.template | agentic/DESIGN.md |
+| generate-development-md | DEVELOPMENT.md.template | agentic/DEVELOPMENT.md |
+| generate-testing-md | TESTING.md.template | agentic/TESTING.md |
+
+**7 skills generate from scratch** (more dynamic, repository-specific):
+- generate-reliability-md
+- generate-security-md
+- generate-quality-score-md
+- generate-core-beliefs-md
+- generate-component-architecture-md
+- generate-data-flow-md
+- generate-glossary-md
+
 ## Usage in Generation Skills
 
-File-specific generation skills (e.g., `generate-development-md`) should:
+Template-backed skills should:
 
 1. **Read template**:
    ```bash

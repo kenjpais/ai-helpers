@@ -40,11 +40,13 @@ This skill is a **thin orchestrator** that:
 ```
 🚀 Agentic-Docs: Create
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Repository: /path/to/repo
-Timestamp: 2026-05-08 14:30:45
-Log file: logs/agentic-docs-create-2026-05-08-14-30-45.log
+Repository: <ACTUAL_REPOSITORY_PATH>
+Timestamp: <ACTUAL_TIMESTAMP>
+Log file: <ACTUAL_LOG_PATH>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
+
+**Metrics grounding**: This output block shows layout only. All placeholders (`<ACTUAL_*>`) MUST be replaced with real values from the current run. Never copy example values from this skill documentation.
 
 ### Phase 1: Create Directory Structure
 
@@ -55,14 +57,14 @@ python lib/generators/structure_generator.py <repo-path>
 ```
 
 **Output**:
-- Creates 13 directories
-- Creates 18 template files with frontmatter
+- Creates <DIRECTORY_COUNT> directories
+- Creates <FILE_COUNT> template files with frontmatter
 - Validates structure
 
-**Logged**:
+**Logged** (via MetricsLogger):
 - Tool used: structure_generator.py
-- Directories created: 13
-- Files created: 18
+- Directories created: <ACTUAL_COUNT>
+- Files created: <ACTUAL_COUNT>
 
 ### Phase 2: Generate Core Documentation
 
@@ -185,51 +187,82 @@ python lib/generators/structure_generator.py <repo-path>
 - Warnings: [list]
 - Errors: [list]
 
-### Phase 7: Display Metrics
+### Phase 7: Read Metrics and Display Summary
 
-**Output to CLI**:
+**CRITICAL**: This phase reads ACTUAL metrics from the current run. DO NOT invent or copy numbers from this skill documentation.
+
+#### Step 1: Locate Metrics File
+
+The metrics file path follows this pattern (from MetricsLogger):
+```
+logs/agentic-docs-create-<TIMESTAMP>.log
+logs/agentic-docs-create-<TIMESTAMP>.metrics.json
+```
+
+Find the metrics JSON file created in Phase 0 (check logs/ directory for most recent file).
+
+#### Step 2: Display Summary Using Script
+
+**Run this command** to display the metrics summary:
+
+```bash
+python lib/display_metrics.py <ACTUAL_METRICS_JSON_PATH>
+```
+
+Example:
+```bash
+python lib/display_metrics.py logs/agentic-docs-create-2026-05-09-10-30-15.metrics.json
+```
+
+**The script output is the ONLY source for the summary**. Do not manually format or invent any metrics.
+
+**Expected output format** (all values from JSON, NO invented numbers):
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ Documentation Generation Complete
+✅ Agentic-Docs Create Complete
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Duration: 2m 34s
+Duration: <DURATION_FROM_JSON>
 
-Files Created:
-  • Core docs: 6 files
-  • Design docs: 3 files
-  • Domain docs: 1 file
-  • Entry points: 2 files
-  • Total: 30 files
+Files Created: <COUNT_FROM_JSON>
+  • Core docs: <COUNT_FROM_JSON> files
+  • Design docs: <COUNT_FROM_JSON> files
+  • Domain docs: <COUNT_FROM_JSON> files
+  • Entry points: <COUNT_FROM_JSON> files
+  • Total: <COUNT_FROM_JSON> files
 
 Skills Invoked:
-  • generate-design-md
-  • generate-development-md
-  • generate-testing-md
-  • generate-reliability-md
-  • generate-security-md
-  • generate-quality-score-md
-  • generate-core-beliefs-md
-  • generate-component-architecture-md
-  • generate-data-flow-md
-  • generate-glossary-md
-  • generate-architecture-md
-  • generate-agents-md
+  <LIST_FROM_JSON>
 
 Data Sources:
-  • README.md
-  • Makefile
-  • test/
-  • docs/
-  • pkg/
-  • [... full list ...]
+  <LIST_FROM_JSON>
 
-Validation: ✅ PASSED
-Quality Score: 78/100
+Validation: <RESULT_FROM_JSON>
+Quality Score: <SCORE_FROM_JSON>
 
-Log file: logs/agentic-docs-create-2026-05-08-14-30-45.log
+Log file: <LOG_PATH_FROM_JSON>
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
+
+**Metrics grounding**: The example above shows layout ONLY. All placeholders (`<*_FROM_JSON>`) MUST be filled from the actual metrics JSON file. If a field is missing from JSON, print `<NOT_RECORDED>` or `unknown`, NEVER invent a value.
+
+### Metrics Source Table
+
+Every field in the summary comes from a specific source:
+
+| Field | Source | Location |
+|-------|--------|----------|
+| Duration | MetricsLogger.duration_ms | `*.metrics.json`: `duration_ms` field |
+| Files Created | MetricsLogger.files_created | `*.metrics.json`: `files_created` array |
+| Files Created (breakdown) | Inferred from file paths | Parse `files_created` array paths |
+| Skills Invoked | MetricsLogger.skills_used | `*.metrics.json`: `skills_used` object keys |
+| Data Sources | MetricsLogger.data_sources | `*.metrics.json`: `data_sources` array |
+| Tools Used | MetricsLogger.tools_used | `*.metrics.json`: `tools_used` object |
+| Validation Result | MetricsLogger.details.validation | `*.metrics.json`: `details.validation` |
+| Quality Score | MetricsLogger.details.quality_score | `*.metrics.json`: `details.quality_score` |
+| Log Path | Metrics JSON filename | Replace `.metrics.json` with `.log` |
+
+**If any field is unavailable**: Print `<NOT_RECORDED>` or `unknown`. NEVER guess or copy from examples.
 
 ## Skills Coordinated
 
@@ -281,7 +314,7 @@ If any skill fails:
 
 ## Logging Requirements
 
-Every run must log to timestamped file:
+Every run must log to timestamped file using **`lib/metrics_logger.py`**:
 - Command invoked
 - Repository path
 - Timestamp
@@ -293,11 +326,19 @@ Every run must log to timestamped file:
 - Final metrics
 - Total duration
 
+**Implementation**: The skill uses `MetricsLogger` from `lib/metrics_logger.py` to provide:
+- Real-time logging to CLI (all tool/skill invocations logged as they happen)
+- Persistent logging to timestamped log file (`logs/agentic-docs-create-{timestamp}.log`)
+- Post-execution metrics summary (duration, tool usage breakdown, skill usage, data sources)
+- Metrics JSON export (`logs/agentic-docs-create-{timestamp}.metrics.json`)
+
+See [lib/METRICS_LOGGER_USAGE.md](../../lib/METRICS_LOGGER_USAGE.md) for complete usage guide.
+
 ## Success Criteria
 
-- ✅ All 30+ documentation files created
-- ✅ All 12 file-generation skills successfully invoked
-- ✅ Validation passes
-- ✅ Quality score ≥70/100
-- ✅ AGENTS.md ≤150 lines
-- ✅ All logs persisted
+- ✅ All documentation files created (count in metrics JSON)
+- ✅ All 12 file-generation skills successfully invoked (check `skills_used` in metrics JSON)
+- ✅ Validation passes (check `details.validation` in metrics JSON)
+- ✅ Quality score ≥70/100 (check `details.quality_score` in metrics JSON)
+- ✅ AGENTS.md ≤150 lines (validated by validate skill)
+- ✅ All logs persisted (check log file and metrics JSON exist)

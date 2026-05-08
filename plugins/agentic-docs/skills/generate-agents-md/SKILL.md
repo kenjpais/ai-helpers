@@ -10,14 +10,19 @@ trigger: /generate-agents-md
 
 Generate the `AGENTS.md` file - the entry point navigation table for AI agents.
 
+## Template
+
+Uses `templates/AGENTS.md.template` as the base structure (based on PR #437).
+
 ## Data Sources
 
 - All agentic/ documentation files (to build index)
 - Component list (from agentic/design-docs/components/)
 - Concept list (from agentic/domain/concepts/)
 - Workflow list (from agentic/domain/workflows/)
+- `templates/AGENTS.md.template` (template file)
 
-## Content Sections
+## Content Sections (from template)
 
 1. **Navigation Table** - Quick links to key documents
 2. **Getting Started** - First steps for agents

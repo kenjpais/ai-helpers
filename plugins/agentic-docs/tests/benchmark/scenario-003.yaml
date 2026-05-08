@@ -1,0 +1,72 @@
+scenario:
+  id: "scenario-003"
+  description: "Refactor duplicated validation logic"
+  category: "refactoring"
+
+  input:
+    task_description: "Refactor validation logic that is duplicated across multiple API handlers into reusable validation functions"
+    context:
+      - "Multiple API handlers have copy-pasted validation code"
+      - "Validation logic includes field presence checks, format validation, and business rules"
+      - "Code review feedback requested reducing duplication"
+
+  expected_outcomes:
+    - id: "identifies-common-validation-patterns"
+      description: "Plan identifies common validation patterns to extract"
+      assertion: "llm-rubric: The execution plan identifies common validation patterns or logic that can be extracted"
+      weight: 2.0
+      critical: true
+
+    - id: "proposes-extraction-approach"
+      description: "Plan proposes how to extract validation into shared functions or validators"
+      assertion: "llm-rubric: The execution plan proposes creating shared validation functions, validator structs, or validation packages"
+      weight: 2.0
+      critical: true
+
+    - id: "addresses-error-handling"
+      description: "Plan addresses consistent error handling across validators"
+      assertion: "llm-rubric: The execution plan addresses how validation errors will be handled and returned consistently"
+      weight: 1.0
+      critical: false
+
+    - id: "includes-refactoring-testing"
+      description: "Plan includes testing to ensure refactoring doesn't change behavior"
+      assertion: "llm-rubric: The execution plan includes testing strategy to verify the refactored code behaves identically to the original"
+      weight: 2.0
+      critical: false
+
+    - id: "considers-backward-compatibility"
+      description: "Plan considers impact on existing callers"
+      assertion: "llm-rubric: The execution plan considers the impact on existing code that calls the validation logic"
+      weight: 1.0
+      critical: false
+
+  forbidden_outcomes:
+    - id: "removes-validation"
+      description: "Plan must not recommend removing validation"
+      assertion: "llm-rubric: The plan does NOT recommend removing or weakening existing validation logic"
+
+    - id: "breaks-existing-behavior"
+      description: "Plan must not recommend changes that break existing behavior"
+      assertion: "llm-rubric: The plan does NOT propose changes that would alter the validation behavior or API contracts"
+
+  grounding:
+    required_components:
+      - "api-server"
+    forbidden_components:
+      - "ValidationCoordinatorService"  # Non-existent
+
+  evaluation:
+    runs_per_scenario: 3
+    pass_threshold: 0.67
+    evaluator:
+      model: "claude-sonnet-4-6"
+      temperature: 0.0
+      prompt_version: "v2.1"
+
+assertion_variants:
+  includes-refactoring-testing:
+    - "llm-rubric: The plan includes a testing strategy to verify refactored code"
+    - "llm-rubric: The plan discusses how to test that behavior is preserved"
+    - "llm-rubric: The plan addresses validation that refactoring doesn't break existing functionality"
+    - "llm-rubric: The plan proposes tests to ensure identical behavior after refactoring"
