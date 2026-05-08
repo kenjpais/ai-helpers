@@ -2,32 +2,54 @@
 
 This document lists all available Claude Code plugins and their commands in the ai-helpers repository.
 
+- [Agentic Docs](#agentic-docs-plugin)
 - [Agendas](#agendas-plugin)
+- [Operator Dashboard](#operator-dashboard-plugin)
 - [Bigquery](#bigquery-plugin)
 - [Ci](#ci-plugin)
+- [Code Review](#code-review-plugin)
 - [Compliance](#compliance-plugin)
-- [Component Health](#component-health-plugin)
 - [Container Image](#container-image-plugin)
 - [Doc](#doc-plugin)
 - [Etcd](#etcd-plugin)
 - [Git](#git-plugin)
 - [Github](#github-plugin)
+- [Gwapi](#gwapi-plugin)
 - [Hcp](#hcp-plugin)
 - [Hello World](#hello-world-plugin)
 - [Jira](#jira-plugin)
 - [Lvms](#lvms-plugin)
+- [Marketplace Ops](#marketplace-ops-plugin)
 - [Must Gather](#must-gather-plugin)
 - [Node](#node-plugin)
 - [Node Tuning](#node-tuning-plugin)
 - [Olm](#olm-plugin)
+- [Olm Team](#olm-team-plugin)
 - [Openshift](#openshift-plugin)
+- [Openshift Tls Profile](#openshift-tls-profile-plugin)
 - [Origin](#origin-plugin)
-- [Prow Job](#prow-job-plugin)
+- [Ote Migration](#ote-migration-plugin)
 - [Session](#session-plugin)
+- [Snowflake](#snowflake-plugin)
 - [Sosreport](#sosreport-plugin)
+- [Teams](#teams-plugin)
+- [Test Coverage](#test-coverage-plugin)
+- [Testing](#testing-plugin)
 - [Utils](#utils-plugin)
 - [Workspaces](#workspaces-plugin)
 - [Yaml](#yaml-plugin)
+
+### Agentic Docs Plugin
+
+Complete lifecycle management for agentic documentation: generation, validation, evaluation, and knowledge graph creation
+
+**Commands:**
+- **`/agentic-docs:create` `[<repo-path>]`** - Generate complete agentic documentation for a repository from repository files only
+- **`/agentic-docs:validate` `[<repo-path>]`** - Validate agentic documentation against quality standards with user-configurable parameters
+- **`/agentic-docs:evaluate` `[<repo-path>]`** - Test documentation quality with coding scenarios using transparent multi-agent execution
+- **`/agentic-docs:create-knowledge-graph` `[<repo-path>]`** - Generate knowledge graph from existing agentic documentation
+
+See [plugins/agentic-docs/README.md](plugins/agentic-docs/README.md) for detailed documentation.
 
 ### Agendas Plugin
 
@@ -37,6 +59,13 @@ A plugin to create various meeting agendas
 - **`/agendas:outcome-refinement`** - Analyze the list of JIRA outcome issues to prepare an outcome refinement meeting agenda.
 
 See [plugins/agendas/README.md](plugins/agendas/README.md) for detailed documentation.
+
+### Operator Dashboard Plugin
+
+Generate OpenShift Console operator dashboard: CRD discovery, list/detail components from templates
+
+**Commands:**
+- **`/operator-dashboard:generate-dashboard` `<operator-name> [--namespace <ns>] [--output-dir <dir>]`** - Generate OpenShift Console operator dashboard from operator name and CRD discovery
 
 ### Bigquery Plugin
 
@@ -49,42 +78,55 @@ See [plugins/bigquery/README.md](plugins/bigquery/README.md) for detailed docume
 
 ### Ci Plugin
 
-Miscellaenous tools for working with OpenShift CI
+Tools for working with OpenShift CI and analyzing Prow job results
 
 **Commands:**
 - **`/ci:add-debug-wait` `<workflow-or-job-name> [timeout]`** - Add a wait step to a CI workflow for debugging test failures
+- **`/ci:analyze-disruption` `<prowjob-url-1> [prowjob-url-2 ...] [--backends backend1,backend2,...]`** - Analyze and compare disruption across one or more Prow CI job runs
+- **`/ci:analyze-payload` `<payload-tag> [--lookback N]`** - Analyze a payload (rejected, accepted, or in-progress) with historical lookback to identify root causes of blocking job failures
+- **`/ci:analyze-pr-reverts` `[limit]`** - Analyze recent PR reverts to identify patterns and recommend preventive measures
+- **`/ci:analyze-prow-job-install-failure` `<prowjob-url>`** - Analyze OpenShift installation failures in Prow CI jobs
+- **`/ci:analyze-prow-job-resource` `prowjob-url resource-name`** - Analyze Kubernetes resource lifecycle in Prow job artifacts
+- **`/ci:analyze-prow-job-test-failure` `prowjob-url [test-name] [--fast]`** - Analyzes test errors from console logs and Prow CI job artifacts
+- **`/ci:analyze-regression` `<regression id>`** - Analyze details about a Component Readiness regression and suggest next steps
 - **`/ci:ask-sippy` `[question]`** - Ask the Sippy AI agent questions about OpenShift CI payloads, jobs, and test results
+- **`/ci:check-if-jira-regression-is-ongoing` `<jira-key-or-url>`** - Check if the regression described in a Jira bug is still ongoing or has resolved
+- **`/ci:continue-session` `<prowjob-url>`** - Download and continue a Claude session from a Prow CI job's artifacts
+- **`/ci:extract-kubeconfig` `<pr-url>`** - Extract kubeconfig from a running CI job in a PR
+- **`/ci:extract-prow-job-must-gather` `prowjob-url`** - Extract and decompress must-gather archives from Prow job artifacts
+- **`/ci:fetch-payloads` `[architecture] [version] [stream]`** - Fetch recent release payloads from the OpenShift release controller
+- **`/ci:fetch-test-report` `<test-name> [release]`** - Fetch a test report from Sippy showing pass rates, test ID, and Jira component
+- **`/ci:list-step` `<workflow-or-chain-name>`** - List the step for the given workflow or chain name
 - **`/ci:list-unstable-tests` `<version> <keywords> [sippy-url]`** - List unstable tests with pass rate below 95%
+- **`/ci:payload-experiment` `<payload-tag>`** - Open draft revert PRs for medium-confidence payload candidates and trigger payload jobs to experimentally determine which PR is causing failures
+- **`/ci:payload-revert` `<payload-tag>`** - Stage reverts for high-confidence payload candidates identified by analyze-payload
 - **`/ci:query-job-status` `<execution-id>`** - Query the status of a gangway job execution by ID
 - **`/ci:query-test-result` `<version> <keywords> [sippy-url]`** - Query test results from Sippy by version and test keywords
+- **`/ci:revert-pr` `<pr-url> <jira-ticket>`** - Revert a merged PR that is breaking CI or nightly payloads
 - **`/ci:trigger-periodic` `<job-name> [ENV_VAR=value ...]`** - Trigger a periodic gangway job with optional environment variable overrides
 - **`/ci:trigger-postsubmit` `<job-name> <org> <repo> <base-ref> <base-sha> [ENV_VAR=value ...]`** - Trigger a postsubmit gangway job with repository refs
 - **`/ci:trigger-presubmit` `<job-name> <org> <repo> <base-ref> <base-sha> <pr-number> <pr-sha> [ENV_VAR=value ...]`** - Trigger a presubmit gangway job (typically use GitHub Prow commands instead)
 
 See [plugins/ci/README.md](plugins/ci/README.md) for detailed documentation.
 
+### Code Review Plugin
+
+Automated code quality review with language-aware analysis for pre-commit verification
+
+**Commands:**
+- **`/code-review:pr` `<pr-url-or-number> [--language <lang>] [--profile <name>] [--skip-build] [--skip-tests]`** - Automated PR code quality review with language-aware analysis and project-specific profiles
+- **`/code-review:pre-commit-review` `[--language <lang>] [--profile <name>] [--skip-build] [--skip-tests]`** - Automated pre-commit code quality review with language-aware analysis and project-specific profiles
+
+See [plugins/code-review/README.md](plugins/code-review/README.md) for detailed documentation.
+
 ### Compliance Plugin
 
 Security compliance and vulnerability analysis tools for Go projects
 
 **Commands:**
-- **`/compliance:analyze-cve` `<CVE-ID>`** - Analyze Go codebase for CVE vulnerabilities and suggest fixes
+- **`/compliance:analyze-cve` `<CVE-ID> [--algo=vta|rta|cha|static]`** - Analyze Go codebase for CVE vulnerabilities and suggest fixes
 
 See [plugins/compliance/README.md](plugins/compliance/README.md) for detailed documentation.
-
-### Component Health Plugin
-
-Analyze component health using regression and jira data
-
-**Commands:**
-- **`/component-health:analyze` `<release> [--components comp1 comp2 ...] [--project JIRAPROJECT]`** - Analyze and grade component health based on regression and JIRA bug metrics
-- **`/component-health:list-components` `<release>`** - List all components tracked in Sippy for a release
-- **`/component-health:list-jiras` `<project> [--component comp1 comp2 ...] [--status status1 status2 ...] [--include-closed] [--limit N]`** - Query and list raw JIRA bug data for a specific project
-- **`/component-health:list-regressions` `<release> [--components comp1 comp2 ...] [--start YYYY-MM-DD] [--end YYYY-MM-DD]`** - Fetch and list raw regression data for OpenShift releases
-- **`/component-health:summarize-jiras` `--project <project> [--component comp1 comp2 ...] [--status status1 status2 ...] [--include-closed] [--limit N]`** - Query and summarize JIRA bugs for a specific project with counts by component
-- **`/component-health:summarize-regressions` `<release> [--components comp1 comp2 ...] [--start YYYY-MM-DD] [--end YYYY-MM-DD]`** - Query and summarize regression data for OpenShift releases with counts and metrics
-
-See [plugins/component-health/README.md](plugins/component-health/README.md) for detailed documentation.
 
 ### Container Image Plugin
 
@@ -127,11 +169,14 @@ Git workflow automation and utilities
 - **`/git:cherry-pick-by-patch` `<commit_hash>`** - Cherry-pick git commit into current branch by "patch" command
 - **`/git:commit-suggest` `[N]`** - Generate Conventional Commits style commit messages or summarize existing commits
 - **`/git:debt-scan`** - Analyze technical debt indicators in the repository
+- **`/git:fix-cherrypick-robot-pr` `<pr-url> [error-messages]`** - Fix a cherrypick-robot PR that needs manual intervention
+- **`/git:redescribe` `[pr-url]`** - Adapt and correct a PR description to match its code diffs and commit messages
 - **`/git:suggest-reviewers` `[base-branch]`** - Suggest appropriate reviewers for a PR based on git blame and OWNERS files
 - **`/git:summary`** - Show current branch, git status, and recent commits for quick context
 
 See [plugins/git/README.md](plugins/git/README.md) for detailed documentation.
 
+<<<<<<< HEAD
 ### Github Plugin
 
 GitHub automation and workflow utilities
@@ -140,6 +185,18 @@ GitHub automation and workflow utilities
 - **`/github:issue-triage` `<owner/repo> [issue-number]`** - Automatically triage and label GitHub issues using AI analysis
 
 See [plugins/github/README.md](plugins/github/README.md) for detailed documentation.
+=======
+### Gwapi Plugin
+
+Gateway API management for Kubernetes/OpenShift clusters
+
+**Commands:**
+- **`/gwapi:check` `[namespace]`** - Check Gateway API resources status in the cluster
+- **`/gwapi:delete` `[namespace]`** - Delete Gateway API resources from a Kubernetes/OpenShift cluster
+- **`/gwapi:install` `[namespace]`** - Install Gateway API resources to a Kubernetes/OpenShift cluster
+
+See [plugins/gwapi/README.md](plugins/gwapi/README.md) for detailed documentation.
+>>>>>>> 0948119635915e5deecfed07dd58d5a6d5e3c293
 
 ### Hcp Plugin
 
@@ -166,13 +223,22 @@ A plugin to automate tasks with Jira
 
 **Commands:**
 - **`/jira:backlog` `[project-key] [--assignee username] [--days-inactive N]`** - Find suitable JIRA tickets from the backlog to work on based on priority and activity
+- **`/jira:catch-me-up` `[N | --days N] [--no-cache]`** - Triage recent Jira activity — surface what needs attention, filter out noise
+- **`/jira:categorize-activity-type` `<issue-key> [--auto-apply]`** - Categorize JIRA tickets into activity types using AI
+- **`/jira:clone-from-github` `<issue-number> [issue-number...] [--github-project <org/repo>] [--jira-project <key>] [--dryrun]`** - Clone GitHub issues to Jira with proper formatting and linking
 - **`/jira:create-release-note` `<issue-key>`** - Generate bug fix release notes from Jira tickets and linked GitHub PRs
 - **`/jira:create` `<type> [project-key] <summary> [--component <name>] [--version <version>] [--parent <key>]`** - Create Jira issues (story, epic, feature, task, bug, feature-request) with proper formatting
+- **`/jira:generate-enhancement` `<issue-key>`** - Generate OpenShift enhancement proposal markdown from a Jira epic or feature
 - **`/jira:generate-feature-doc` `<feature-key>`** - Generate comprehensive feature documentation from Jira feature and all related issues and PRs
 - **`/jira:generate-test-plan` `[JIRA issue key] [GitHub PR URLs]`** - Generate test steps for a JIRA issue
 - **`/jira:grooming` `[project-filter] [time-period] [--component component-name] [--label label-name] [--type issue-type] [--status status] [--story-points]`** - Analyze new bugs and cards added over a time period and generate grooming meeting agenda
+- **`/jira:issues-by-component` `<project-key> [time-period] [--component name] [--assignee username] [--reporter username] [--status status] [--search term] [--search-description]`** - List and analyze JIRA issues organized by component with flexible filtering
+- **`/jira:ready-to-solve` `<jira-issue-key> [--dry-run] [--verbose] [--fix]`** - Check whether a Jira issue is well-groomed and ready for /jira:solve
+- **`/jira:reconcile-github` `[--github-project <org/repo>] [--jira-project <key>] [--profile <name>] [--porcelain] [--output json|yaml]`** - Reconcile state mismatches between GitHub and Jira issues
+- **`/jira:setup-gh2jira`** - Install and configure the gh2jira utility with all required tools and credentials
 - **`/jira:solve`** - Analyze a JIRA issue and create a pull request to solve it.
 - **`/jira:status-rollup` `issue-id [--start-date YYYY-MM-DD] [--end-date YYYY-MM-DD]`** - Generate a status rollup comment for any JIRA issue based on all child issues and a given date range
+- **`/jira:update-weekly-status` `[project-key] [--component name] [--label label-name] [user-filters...]`** - Update weekly status summaries for Jira issues with component and user filtering
 - **`/jira:validate-blockers` `[target-version] [component-filter] [--bug issue-key]`** - Validate proposed release blockers using Red Hat OpenShift release blocker criteria
 
 See [plugins/jira/README.md](plugins/jira/README.md) for detailed documentation.
@@ -185,6 +251,16 @@ LVMS (Logical Volume Manager Storage) plugin for troubleshooting and debugging s
 - **`/lvms:analyze` `[must-gather-path|--live] [--component storage|operator|volumes]`** - Comprehensive LVMS troubleshooting - analyzes LVMCluster, volume groups, PVCs, and storage issues on live clusters or must-gather
 
 See [plugins/lvms/README.md](plugins/lvms/README.md) for detailed documentation.
+
+### Marketplace Ops Plugin
+
+Maintenance commands for Claude Code plugin marketplaces
+
+**Commands:**
+- **`/marketplace-ops:prune-update` `[PR number or URL]`** - Process /save and /drop comments on a pruning PR, restore or remove items, and update .pruneprotect
+- **`/marketplace-ops:prune` `[--dry-run]`** - Analyze and prune stale plugins, commands, and skills from the marketplace
+
+See [plugins/marketplace-ops/README.md](plugins/marketplace-ops/README.md) for detailed documentation.
 
 ### Must Gather Plugin
 
@@ -235,11 +311,23 @@ OLM (Operator Lifecycle Manager) plugin for operator management and debugging
 
 See [plugins/olm/README.md](plugins/olm/README.md) for detailed documentation.
 
+### Olm Team Plugin
+
+OLM team development utilities and onboarding tools
+
+**Commands:**
+- **`/olm-team:configure-agent`** - Configure the k8s-ocp-olm-expert agent with local repository paths
+- **`/olm-team:dev-setup` `[target-directory]`** - Set up OLM development repositories and onboard to the team
+- **`/olm-team:ep-watch`** - Watch open Enhancement PRs from other teams that may impact OLM
+
+See [plugins/olm-team/README.md](plugins/olm-team/README.md) for detailed documentation.
+
 ### Openshift Plugin
 
 OpenShift development utilities and helpers
 
 **Commands:**
+- **`/openshift:add-enhancement` `[area] <name> <description> <jira>`** - Create a new OpenShift Enhancement Proposal
 - **`/openshift:bootstrap-om`** - Bootstrap OpenShift Manager (OM) integration for OpenShift operators with automated resource discovery
 - **`/openshift:bump-deps` `<dependency> [version] [--create-jira] [--create-pr]`** - Bump dependencies in OpenShift projects with automated analysis and PR creation
 - **`/openshift:cluster-health-check` `[--verbose] [--output-format]`** - Perform comprehensive health check on OpenShift cluster and report issues
@@ -249,11 +337,24 @@ OpenShift development utilities and helpers
 - **`/openshift:expand-test-case` `[test-idea-or-file-or-commands] [format]`** - Expand basic test ideas or existing oc commands into comprehensive test scenarios with edge cases in oc CLI or Ginkgo format
 - **`/openshift:ironic-status`** - Check status of Ironic baremetal nodes in OpenShift cluster
 - **`/openshift:new-e2e-test` `[test-specification]`** - Write and validate new OpenShift E2E tests using Ginkgo framework
+- **`/openshift:node-kernel-conntrack` `<node> <image> [--command <cmd>] [--filter <params>]`** - Get connection tracking entries from Kubernetes node
+- **`/openshift:node-kernel-ip` `<node> <image> --command <cmd> [--options <opts>] [--filter <params>]`** - Inspect routing, network devices, and interfaces on Kubernetes node
+- **`/openshift:node-kernel-iptables` `<node> <image> --command <cmd> [--table <table>] [--filter <params>]`** - Inspect IPv4 and IPv6 packet filter rules on Kubernetes node
+- **`/openshift:node-kernel-nft` `<node> <image> --command <cmd> [--family <family>]`** - Inspect nftables packet filtering and classification rules on Kubernetes node
 - **`/openshift:rebase` `<tag>`** - Rebase OpenShift fork of an upstream repository to a new upstream release.
 - **`/openshift:review-test-cases` `[file-path-or-test-code-or-commands]`** - Review test cases for completeness, quality, and best practices - accepts file path or direct oc commands/test code
 - **`/openshift:visualize-ovn-topology`** - Generate and visualize OVN-Kubernetes network topology diagram
 
 See [plugins/openshift/README.md](plugins/openshift/README.md) for detailed documentation.
+
+### Openshift Tls Profile Plugin
+
+Implementation requirements and details for OpenShift TLS security profiles
+
+**Commands:**
+- **`/openshift-tls-profile:implement` `[question or implementation request]`** - Use this skill to implement TLS security profiles for operators and workloads on OpenShift. Provides guidance on reading TLS config from APIServer CR and applying it to webhook/metrics servers, HTTP, and gRPC endpoints.
+
+See [plugins/openshift-tls-profile/README.md](plugins/openshift-tls-profile/README.md) for detailed documentation.
 
 ### Origin Plugin
 
@@ -264,17 +365,14 @@ Helpers for openshift/origin development.
 
 See [plugins/origin/README.md](plugins/origin/README.md) for detailed documentation.
 
-### Prow Job Plugin
+### Ote Migration Plugin
 
-A plugin to analyze and inspect Prow CI job results
+Automate OpenShift Tests Extension (OTE) migration for component repositories
 
 **Commands:**
-- **`/prow-job:analyze-install-failure` `<prowjob-url>`** - Analyze OpenShift installation failures in Prow CI jobs
-- **`/prow-job:analyze-resource` `prowjob-url resource-name`** - Analyze Kubernetes resource lifecycle in Prow job artifacts
-- **`/prow-job:analyze-test-failure` `prowjob-url test-name`** - Analyzes test errors from console logs and Prow CI job artifacts
-- **`/prow-job:extract-must-gather` `prowjob-url`** - Extract and decompress must-gather archives from Prow job artifacts
+- **`/ote-migration:migrate`** - Automate OpenShift Tests Extension (OTE) migration for component repositories
 
-See [plugins/prow-job/README.md](plugins/prow-job/README.md) for detailed documentation.
+See [plugins/ote-migration/README.md](plugins/ote-migration/README.md) for detailed documentation.
 
 ### Session Plugin
 
@@ -284,6 +382,15 @@ A plugin to save and resume conversation sessions across long time intervals
 - **`/session:save-session` `[optional-description]`** - Save current conversation session to markdown file for future continuation
 
 See [plugins/session/README.md](plugins/session/README.md) for detailed documentation.
+
+### Snowflake Plugin
+
+Snowflake data analysis commands for engineering metrics and reports
+
+**Commands:**
+- **`/snowflake:activity-type-report` `<projects> [months] [--sample [N]] [--todo | --all] [--uncategorized]`** - Classify Jira issues into activity types using AI and generate an interactive sankey report
+
+See [plugins/snowflake/README.md](plugins/snowflake/README.md) for detailed documentation.
 
 ### Sosreport Plugin
 
@@ -295,16 +402,57 @@ Analyze sosreport archives for system diagnostics and troubleshooting
 
 See [plugins/sosreport/README.md](plugins/sosreport/README.md) for detailed documentation.
 
+### Teams Plugin
+
+Team structure knowledge and health analysis commands for OpenShift teams
+
+**Commands:**
+- **`/teams:coderabbit-adoption-report` `[--start-date YYYY-MM-DD] [--end-date YYYY-MM-DD]`** - Report on CodeRabbit adoption across OCP payload repos
+- **`/teams:coderabbit-inheritance-scanner` `[--dry-run]`** - Scan openshift org repos for .coderabbit.yaml/.coderabbit.yml files missing inheritance
+- **`/teams:coderabbit-rules-from-pr-reviews` `<repo> [--count N]`** - Analyze PR review comments to propose CodeRabbit rules for a repository
+- **`/teams:health-check-jiras` `--project <project> [--component comp1 comp2 ...] [--team <team-name>] [--status status1 status2 ...] [--include-closed] [--limit N]`** - Query and summarize JIRA bugs for a specific project with counts by component
+- **`/teams:health-check-regressions` `<release> [--components comp1 comp2 ...] [--team <team-name>] [--start YYYY-MM-DD] [--end YYYY-MM-DD]`** - Query and summarize regression data for OpenShift releases with counts and metrics
+- **`/teams:health-check` `<release> [--components comp1 comp2 ...] [--team <team-name>] [--project JIRAPROJECT]`** - Analyze and grade component health based on regression and JIRA bug metrics
+- **`/teams:list-components` `[--team <team-name>]`** - List all OCPBUGS components, optionally filtered by team
+- **`/teams:list-jiras` `<project> [--component comp1 comp2 ...] [--status status1 status2 ...] [--include-closed] [--limit N]`** - Query and list raw JIRA bug data for a specific project
+- **`/teams:list-regressions` `<release> [--components comp1 comp2 ...] [--start YYYY-MM-DD] [--end YYYY-MM-DD]`** - Fetch and list raw regression data for OpenShift releases
+- **`/teams:list-teams`** - List all teams from the team component mapping
+
+See [plugins/teams/README.md](plugins/teams/README.md) for detailed documentation.
+
+### Test Coverage Plugin
+
+Analyze code coverage and identify untested paths
+
+**Commands:**
+- **`/test-coverage:analyze` `<path-or-url> [--output <path>] [--priority <level>] [--test-structure-only]`** - Analyze test code structure without running tests to identify coverage gaps
+- **`/test-coverage:gaps` `<test-file-or-url> [--output <path>]`** - Identify E2E test scenario gaps in OpenShift/Kubernetes tests (component-agnostic)
+
+See [plugins/test-coverage/README.md](plugins/test-coverage/README.md) for detailed documentation.
+
+### Testing Plugin
+
+Comprehensive testing utilities for operators and applications
+
+**Commands:**
+- **`/testing:mutation-test` `[operator-path] [--controllers <controller1,controller2>] [--mutation-types <types>] [--report-format <format>]`** - Test operator controller quality through mutation testing - validates test suite catches code mutations
+
+See [plugins/testing/README.md](plugins/testing/README.md) for detailed documentation.
+
 ### Utils Plugin
 
 A generic utilities plugin serving as a catch-all for various helper commands and agents
 
 **Commands:**
-- **`/utils:address-reviews` `[PR number (optional - uses current branch if omitted)]`** - Fetch and address all PR review comments
+- **`/utils:address-reviews` `[PR number (optional - uses current branch if omitted)] [--preview]`** - Fetch and address all PR review comments
 - **`/utils:auto-approve-konflux-prs` `<target-repository>`** - Automate approving Konflux bot PRs for the given repository by adding /lgtm and /approve
+- **`/utils:find-konflux-images` `<PR-URL>`** - Find and verify Konflux-built container images from a GitHub PR
 - **`/utils:generate-test-plan` `[GitHub PR URLs]`** - Generate test steps for one or more related PRs
+- **`/utils:gh-attention` `[--repo <org/repo>]`** - List PRs and issues requiring your attention
 - **`/utils:placeholder`** - Placeholder command for the utils plugin
 - **`/utils:process-renovate-pr` `<PR_NUMBER|open> [JIRA_PROJECT] [COMPONENT]`** - Process Renovate dependency PR(s) to meet repository contribution standards
+- **`/utils:review-ai-helpers-overlap` `[--idea TEXT] [--pr NUMBER] [--verbose]`** - Review potential overlaps with existing ai-helpers (Claude Code Plugins, Commands, Skills, Sub-agents, or Hooks) and open PRs
+- **`/utils:review-security` `[file-paths-or-patterns]`** - Orchestrate security scanners and provide contextual triage of findings
 
 See [plugins/utils/README.md](plugins/utils/README.md) for detailed documentation.
 

@@ -3,141 +3,253 @@
   "owner": {
     "name": "openshift-eng"
   },
+  "allowCrossMarketplaceDependenciesOn": ["claude-plugins-official"],
   "plugins": [
     {
       "name": "git",
       "source": "./plugins/git",
-      "description": "Git Plugin"
+      "description": "Git Plugin",
+      "version": "0.0.5"
     },
     {
       "name": "hello-world",
       "source": "./plugins/hello-world",
-      "description": "Hello World Plugin"
+      "description": "Hello World Plugin",
+      "version": "1.0.1"
     },
     {
       "name": "jira",
       "source": "./plugins/jira",
-      "description": "A plugin to automate tasks with Jira"
+      "description": "A plugin to automate tasks with Jira",
+      "version": "0.4.4"
     },
     {
       "name": "ci",
       "source": "./plugins/ci",
-      "description": "A plugin to work with OpenShift CI"
+      "description": "A plugin to work with OpenShift CI and analyze Prow job results",
+      "version": "0.0.39"
     },
     {
-      "name": "component-health",
-      "source": "./plugins/component-health",
-      "description": "Analyze component health and track regressions across OpenShift releases"
+      "name": "teams",
+      "source": "./plugins/teams",
+      "description": "Team structure knowledge and health analysis commands for OpenShift teams",
+      "version": "0.0.13"
     },
     {
       "name": "doc",
       "source": "./plugins/doc",
-      "description": "A plugin for engineering documentation and notes"
+      "description": "A plugin for engineering documentation and notes",
+      "version": "0.0.2"
     },
     {
       "name": "session",
       "source": "./plugins/session",
-      "description": "A plugin for Claude session management and persistence"
+      "description": "A plugin for Claude session management and persistence",
+      "version": "0.0.2"
+    },
+    {
+      "name": "snowflake",
+      "source": "./plugins/snowflake",
+      "description": "Snowflake data analysis commands for engineering metrics and reports",
+      "version": "0.4.0"
     },
     {
       "name": "sosreport",
       "source": "./plugins/sosreport",
-      "description": "Analyze sosreport archives for system diagnostics and troubleshooting"
+      "description": "Analyze sosreport archives for system diagnostics and troubleshooting",
+      "version": "0.0.2"
     },
     {
       "name": "utils",
       "source": "./plugins/utils",
-      "description": "A generic utilities plugin serving as a catch-all for various helper commands"
+      "description": "A generic utilities plugin serving as a catch-all for various helper commands",
+      "version": "0.0.9"
     },
     {
       "name": "olm",
       "source": "./plugins/olm",
-      "description": "OLM (Operator Lifecycle Manager) plugin for operator management and debugging"
+      "description": "OLM (Operator Lifecycle Manager) plugin for operator management and debugging",
+      "version": "0.1.1"
     },
     {
-      "name": "prow-job",
-      "source": "./plugins/prow-job",
-      "description": "A plugin to analyze and inspect Prow CI job results"
+      "name": "olm-team",
+      "source": "./plugins/olm-team",
+      "description": "OLM team development utilities and onboarding tools",
+      "version": "0.2.0"
+    },
+    {
+      "name": "operator-dashboard",
+      "source": "./plugins/ai-operator-dashboard-generator",
+      "description": "Generate OpenShift Console operator dashboard: CRD discovery, list/detail components from templates",
+      "version": "0.0.1"
     },
     {
       "name": "agendas",
       "source": "./plugins/agendas",
-      "description": "A plugin to create various meeting agendas"
+      "description": "A plugin to create various meeting agendas",
+      "version": "0.0.3"
     },
     {
       "name": "openshift",
       "source": "./plugins/openshift",
-      "description": "OpenShift development utilities and helpers"
+      "description": "OpenShift development utilities and helpers",
+      "version": "0.0.5"
+    },
+    {
+      "name": "openshift-tls-profile",
+      "source": "./plugins/openshift-tls-profile",
+      "description": "Implementation requirements and details for OpenShift TLS security profiles",
+      "version": "0.0.1"
     },
     {
       "name": "etcd",
       "source": "./plugins/etcd",
-      "description": "Etcd cluster health monitoring and performance analysis utilities"
+      "description": "Etcd cluster health monitoring and performance analysis utilities",
+      "version": "0.0.2"
     },
     {
       "name": "yaml",
       "source": "./plugins/yaml",
-      "description": "YAML documentation and utilities"
+      "description": "YAML documentation and utilities",
+      "version": "0.0.2"
     },
     {
       "name": "must-gather",
       "source": "./plugins/must-gather",
-      "description": "A plugin to analyze and report on must-gather data"
+      "description": "A plugin to analyze and report on must-gather data",
+      "version": "0.0.2"
     },
     {
       "name": "lvms",
       "source": "./plugins/lvms",
-      "description": "LVMS (Logical Volume Manager Storage) plugin for troubleshooting and debugging storage issues"
+      "description": "LVMS (Logical Volume Manager Storage) plugin for troubleshooting and debugging storage issues",
+      "version": "0.1.1"
+    },
+    {
+      "name": "native-notifications",
+      "source": "./plugins/native-notifications",
+      "description": "Cross-platform desktop notifications for ai-helpers",
+      "version": "0.0.2"
     },
     {
       "name": "metrics",
       "source": "./plugins/metrics",
-      "description": "Anonymous metrics usage for ai-helpers"
+      "description": "Anonymous metrics usage for ai-helpers",
+      "version": "0.0.2"
     },
     {
       "name": "hcp",
       "source": "./plugins/hcp",
-      "description": "Generate HyperShift cluster creation commands via hcp CLI from natural language descriptions"
+      "description": "Generate HyperShift cluster creation commands via hcp CLI from natural language descriptions",
+      "version": "0.0.2"
     },
     {
       "name": "compliance",
       "source": "./plugins/compliance",
-      "description": "Security compliance and vulnerability analysis tools for Go projects"
+      "description": "Security compliance and vulnerability analysis tools for Go projects",
+      "version": "0.0.3"
+    },
+    {
+      "name": "test-coverage",
+      "source": "./plugins/test-coverage",
+      "description": "Analyze test coverage and identify gaps in test scenarios",
+      "version": "0.0.2"
     },
     {
       "name": "node-tuning",
       "source": "./plugins/node-tuning",
-      "description": "Generate and analyze OpenShift node tuning profiles"
+      "description": "Generate and analyze OpenShift node tuning profiles",
+      "version": "1.0.0"
+    },
+    {
+      "name": "testing",
+      "source": "./plugins/testing",
+      "description": "Comprehensive testing utilities for operators and applications",
+      "version": "0.1.0"
     },
     {
       "name": "origin",
       "source": "./plugins/origin",
-      "description": "Helpers for openshift/origin development."
+      "description": "Helpers for openshift/origin development.",
+      "version": "0.0.2"
     },
     {
       "name": "container-image",
       "source": "./plugins/container-image",
-      "description": "Container image inspection and analysis using skopeo and podman"
+      "description": "Container image inspection and analysis using skopeo and podman",
+      "version": "0.0.2"
     },
     {
       "name": "node",
       "source": "./plugins/node",
-      "description": "Kubernetes and OpenShift node health monitoring and diagnostics"
+      "description": "Kubernetes and OpenShift node health monitoring and diagnostics",
+      "version": "0.0.2"
     },
     {
       "name": "bigquery",
       "source": "./plugins/bigquery",
-      "description": "BigQuery analysis utilities"
+      "description": "BigQuery analysis utilities",
+      "version": "0.0.2"
     },
     {
       "name": "workspaces",
       "source": "./plugins/workspaces",
-      "description": "Manage isolated git worktree workspaces for multi-repo development"
+      "description": "Manage isolated git worktree workspaces for multi-repo development",
+      "version": "1.0.1"
     },
     {
       "name": "github",
       "source": "./plugins/github",
-      "description": "GitHub automation and workflow utilities for issue management and triage"
+      "description": "GitHub automation and workflow utilities for issue management and triage",
+      "version": "0.0.1"
+    },
+    {
+      "name": "gwapi",
+      "source": "./plugins/gwapi",
+      "description": "Gateway API installation utilities for Kubernetes/OpenShift clusters",
+      "version": "0.0.1"
+    },
+    {
+      "name": "code-review",
+      "source": "./plugins/code-review",
+      "description": "Automated code quality review with language-aware analysis for pre-commit verification",
+      "version": "0.0.7"
+    },
+    {
+      "name": "golang",
+      "source": "./plugins/golang",
+      "description": "Go development tools: gopls MCP server, LSP integration, automatic gofmt formatting, and golangci-lint linting",
+      "version": "0.2.0"
+    },
+    {
+      "name": "ote-migration",
+      "source": "./plugins/ote-migration",
+      "description": "Automate OpenShift Tests Extension (OTE) migration for component repositories",
+      "version": "0.0.1"
+    },
+    {
+      "name": "console",
+      "source": "./plugins/console",
+      "description": "OpenShift Console dynamic plugin development utilities",
+      "version": "0.0.1"
+    },
+    {
+      "name": "ai-sbom",
+      "source": "./plugins/ai-sbom",
+      "description": "Generate AI Software Bill of Materials (SBOM) declarations for PR descriptions",
+      "version": "0.0.1"
+    },
+    {
+      "name": "marketplace-ops",
+      "source": "./plugins/marketplace-ops",
+      "description": "Maintenance commands for Claude Code plugin marketplaces",
+      "version": "0.1.2"
+    },
+    {
+      "name": "agentic-docs",
+      "source": "./plugins/agentic-docs",
+      "description": "Complete lifecycle management for agentic documentation: generation, validation, evaluation, and knowledge graph creation",
+      "version": "0.1.0"
     }
   ]
 }

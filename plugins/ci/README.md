@@ -1,7 +1,7 @@
 # CI Plugin
 
 A plugin for working with OpenShift CI infrastructure, providing
-commands to analyze CI data, investigate failures, and understand
+commands to analyze CI workflow,chain or data, investigate failures, and understand
 release quality.
 
 ## Commands
@@ -63,6 +63,23 @@ export ASK_SIPPY_API_TOKEN='your-token-here'
    ```bash
    /ask-sippy Why is the test "sig-network Feature:SCTP should create a Pod with SCTP HostPort" failing?
    ```
+
+### list-step
+Lists all step references (ref) used in a specified workflow or chain.
+
+**Prerequisites:**
+
+Run this command from your local clone of the openshift/release repository.
+
+**Usage:**
+```bash
+/list-step
+```
+**Arguments:**
+- workflow-name (e.g., `hypershift-aws-e2e-external`)
+
+or 
+- chain-name(e.g., `rosa-cluster-provision-chain`)
 
 ### trigger-periodic
 
@@ -135,6 +152,56 @@ Query the status of a gangway job execution by ID.
 **Returns:**
 - Job name, type, and status (SUCCESS, FAILURE, PENDING, RUNNING, ABORTED)
 - GCS path to artifacts (if available)
+
+### analyze-prow-job-test-failure
+
+Analyze a failed test by inspecting test code and Prow CI job artifacts.
+
+**Usage:**
+```bash
+/ci:analyze-prow-job-test-failure <prowjob-url> <test-name>
+```
+
+### analyze-prow-job-install-failure
+
+Analyze OpenShift installation failures in Prow CI jobs by examining installer logs, log bundles, and sosreports.
+
+**Usage:**
+```bash
+/ci:analyze-prow-job-install-failure <prowjob-url>
+```
+
+### analyze-prow-job-resource
+
+Analyze Kubernetes resource lifecycle in Prow job artifacts. Generates interactive HTML reports with timeline visualization.
+
+**Usage:**
+```bash
+/ci:analyze-prow-job-resource <prowjob-url> [namespace:][kind/][resource-name]
+```
+
+### extract-prow-job-must-gather
+
+Extract and decompress must-gather archives from Prow job artifacts into an interactive HTML file browser.
+
+**Usage:**
+```bash
+/ci:extract-prow-job-must-gather <prowjob-url>
+```
+
+### extract-kubeconfig
+
+Extract kubeconfig from a running rehearsal/CI job in a GitHub PR. Checks step status to verify the cluster is ready, then connects to the build cluster to extract the kubeconfig from the running pod. Supports both standard and HyperShift (nested kubeconfig) clusters, and both public (`prow.ci.openshift.org`) and private (`qe-private-deck`) jobs.
+
+**Prerequisites:** `gh` and `oc` CLI tools required. `gsutil` is optional — when unavailable, the command falls back to finding the build cluster from the job config in the repo. You should be the PR author.
+
+**Usage:**
+```bash
+/ci:extract-kubeconfig <pr-url>
+```
+
+**Arguments:**
+- PR URL (e.g., `https://github.com/openshift/release/pull/75742`)
 
 ## Configuration
 

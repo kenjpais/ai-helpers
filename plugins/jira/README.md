@@ -6,7 +6,9 @@ Comprehensive Jira integration for Claude Code, providing AI-powered tools to an
 
 - 🔍 **Issue Analysis and Solutions** - Analyze JIRA issues and create pull requests to solve them
 - 📊 **Status Rollups** - Generate comprehensive status rollup comments for any Jira issue given a date range
+- 📝 **Weekly Status Updates** - Automate weekly status summary updates with intelligent activity analysis and color-coded health indicators
 - 📋 **Backlog Grooming** - Analyze new bugs and cards for grooming meetings
+- 🏷️ **Activity Type Categorization** - AI-powered categorization of JIRA tickets into activity types with confidence scoring
 - 🧪 **Test Generation** - Generate comprehensive test steps for JIRA issues by analyzing related PRs
 - ✨ **Issue Creation** - Create well-formed stories, epics, features, tasks, bugs, and feature requests with guided workflows
 - 📝 **Release Note Generation** - Automatically generate bug fix release notes from Jira and linked GitHub PRs
@@ -21,21 +23,28 @@ Comprehensive Jira integration for Claude Code, providing AI-powered tools to an
 
 ### Setting up Jira MCP Server
 
+**Option 1: Podman container (recommended if you already have Podman)**
+
 ```bash
 # Start the atlassian mcp server using podman
-podman run -i --rm -p 8080:8080 -e "JIRA_URL=https://issues.redhat.com" -e "JIRA_USERNAME" -e "JIRA_PERSONAL_TOKEN" -e "JIRA_SSL_VERIFY" ghcr.io/sooperset/mcp-atlassian:latest --transport sse --port 8080 -vv
+podman run -i --rm -p 8080:8080 -e "JIRA_URL=https://redhat.atlassian.net" -e "JIRA_USERNAME" -e "JIRA_API_TOKEN" ghcr.io/sooperset/mcp-atlassian:latest --transport sse --port 8080 -vv
 ```
 
-Add the MCP server to Claude:
+Then add it to Claude as an SSE server:
 
 ```bash
-# Add the Atlassian MCP server
-claude mcp add --transport sse atlassian http://localhost:8080/sse
+claude mcp add --transport sse jira http://localhost:8080/sse
+```
+
+**Option 2: uvx (no container needed)**
+
+```bash
+claude mcp add -e JIRA_URL="https://redhat.atlassian.net" -e JIRA_API_TOKEN="token" -e JIRA_USERNAME="user@redhat.com" --transport stdio jira -- uvx mcp-atlassian
 ```
 
 #### Getting Tokens
 
-For your Jira token, use https://issues.redhat.com/secure/ViewProfile.jspa?selectedTab=com.atlassian.pats.pats-plugin:jira-user-personal-access-tokens
+For your Jira API token, use https://id.atlassian.com/manage-profile/security/api-tokens
 
 ### Notes and tips
 
@@ -44,7 +53,6 @@ For your Jira token, use https://issues.redhat.com/secure/ViewProfile.jspa?selec
 - The `atlassian` server example uses an MCP container image: `ghcr.io/sooperset/mcp-atlassian:latest`.
 - If you prefer Docker, replace the `podman` command with `docker` (arguments are typically the same).
 - If Podman is installed via Podman Machine on macOS, ensure it is running: `podman machine start`.
-- Keep `JIRA_SSL_VERIFY` as "true" unless you have a specific reason to disable TLS verification.
 - Limit active MCP servers: running too many at once can degrade performance or hit limits. Use Cursor's MCP panel to disable those you don't need for the current session.
 
 ## Installation
@@ -55,6 +63,20 @@ Ensure you have the ai-helpers marketplace enabled, via [the instructions here](
 # Install the plugin
 /plugin install jira@ai-helpers
 ```
+
+## Reference Files
+
+This plugin uses shared reference files for progressive disclosure, following [Claude Code best practices](https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices#progressive-disclosure-patterns).
+
+Skills reference these files rather than duplicating content:
+
+| File | Purpose |
+|------|---------|
+| [reference/wiki-markup.md](reference/wiki-markup.md) | JIRA Wiki Markup formatting guide |
+| [reference/mcp-tools.md](reference/mcp-tools.md) | MCP tool signatures and custom fields |
+| [reference/cli-fallback.md](reference/cli-fallback.md) | jira-cli commands when MCP unavailable |
+
+**Best Practice:** Keep references one level deep. Link directly from SKILL.md to reference files. Deeply nested references may result in partial file reads.
 
 ## Available Commands
 
@@ -106,6 +128,23 @@ Analyze and organize new bugs and cards added over a specified time period to pr
 /jira:grooming OCPSTRAT last-week --component "Control Plane" --label "security"
 ```
 See [commands/grooming.md](commands/grooming.md) for full documentation.
+
+---
+
+### `/jira:categorize-activity-type` - AI-Powered Activity Type Categorization
+
+Analyze JIRA tickets and automatically assign Activity Type categories based on ticket content, issue type, labels, and parent Epic context. Uses AI-powered analysis with confidence scoring to ensure accurate categorizations.
+
+**Usage:**
+```bash
+# Basic usage (prompts for confirmation)
+/jira:categorize-activity-type ROX-12345
+
+# Auto-apply for high confidence categorizations
+/jira:categorize-activity-type ROX-12345 --auto-apply
+```
+
+See [commands/categorize-activity-type.md](commands/categorize-activity-type.md) for full documentation.
 
 ---
 
@@ -233,10 +272,64 @@ Fix: Added nil check for CloudProviderConfig.Subnet before accessing Subnet.ID f
 Result: The control-plane-operator no longer crashes when CloudProviderConfig.Subnet is not specified
 ---
 
-Updated: https://issues.redhat.com/browse/OCPBUGS-38358
+Updated: https://redhat.atlassian.net/browse/OCPBUGS-38358
 ```
 
 See [commands/create-release-note.md](commands/create-release-note.md) for full documentation.
+
+---
+
+### `/jira:update-weekly-status` - Update Weekly Status Summaries
+
+Automate the process of updating weekly status summaries for Jira issues with intelligent activity analysis and color-coded health indicators. The command analyzes recent activity across tickets, GitHub PRs, and GitLab MRs to draft status updates (Red/Yellow/Green), then allows you to review and modify them before updating Jira.
+
+**Usage:**
+```bash
+# Interactive mode (prompts for project and component)
+/jira:update-weekly-status
+
+# Specify project
+/jira:update-weekly-status OCPSTRAT
+
+# Specify project and component
+/jira:update-weekly-status OCPSTRAT --component "Control Plane"
+
+# With label filter
+/jira:update-weekly-status OCPSTRAT --label strategic-work
+
+# With specific users (by email)
+/jira:update-weekly-status OCPBUGS antoni@redhat.com jdoe@redhat.com
+
+# With excluded users
+/jira:update-weekly-status OCPSTRAT !manager@redhat.com
+
+# Full example with all options
+/jira:update-weekly-status OCPSTRAT --component "Control Plane" --label strategic-work user@redhat.com
+```
+
+**Key Features:**
+- Interactive component selection from available project components
+- User filtering by email or display name (with auto-resolution)
+- Intelligent activity analysis (comments, child issues, linked PRs/MRs)
+- Recent update warnings to prevent duplicate updates (24-hour check)
+- Batch processing with selective skip options
+- Formatted status summaries with color-coded health indicators (Red/Yellow/Green)
+- Auto-detects Status Summary custom field or prompts for field ID
+
+**What it does:**
+1. Filters issues by project, component, label, and assignee
+2. Checks recent activity (comments, PR updates, child issues)
+3. Drafts color-coded status summaries with specific accomplishments
+4. Warns about recently-updated issues to avoid duplicates
+5. Allows review and modification before updating
+6. Provides comprehensive summary report with statistics
+
+**Prerequisites:**
+- Jira MCP server configured
+- GitHub CLI (`gh`) installed and authenticated (optional but recommended)
+- Jira permissions to update Status Summary field
+
+See [commands/update-weekly-status.md](commands/update-weekly-status.md) for full documentation.
 
 ---
 

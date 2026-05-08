@@ -20,9 +20,21 @@ Automate processing of Renovate dependency update PRs.
 
 Automate approving Konflux bot PRs for the given repository by adding /lgtm and /approve
 
+### `/utils:review-security`
+
+Orchestrate security scanners and provide contextual triage of findings.
+
 ### `/utils:placeholder`
 
 A placeholder command for testing and development.
+
+### `/utils:find-konflux-images`
+
+Find and verify Konflux-built container images from a GitHub PR, checking their availability on quay.io.
+
+### `/utils:review-ai-helpers-overlap`
+
+Review potential overlaps with existing ai-helpers (Claude Code Plugins, Commands, Skills, Sub-agents, or Hooks) and open PRs.
 
 ## Purpose
 

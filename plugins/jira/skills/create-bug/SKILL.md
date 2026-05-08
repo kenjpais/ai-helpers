@@ -17,6 +17,11 @@ This skill is automatically invoked by the `/jira:create bug` command to guide t
 - User has permissions to create issues in the target project
 - Bug information available (problem description, steps to reproduce, etc.)
 
+**Reference Documentation:**
+- [Markdown for Jira Reference](../../reference/markdown-for-jira.md) - Markdown formatting for Jira descriptions
+- [MCP Tools Reference](../../reference/mcp-tools.md) - MCP tool signatures and custom fields
+- [CLI Fallback Reference](../../reference/cli-fallback.md) - jira-cli commands (only if MCP unavailable)
+
 ## Bug Report Best Practices
 
 ### Complete Information
@@ -230,7 +235,7 @@ Different projects may use versions differently:
 
 **OCPBUGS:**
 - **Affects Version/s** (`versions`): Version where bug was found
-- **Target Version** (`customfield_12319940`): Version where fix is targeted
+- **Target Version** (`customfield_10855`): Version where fix is targeted
 - Never set **Fix Version/s** (`fixVersions`)
 
 **General projects:**
@@ -287,40 +292,40 @@ mcp__atlassian__jira_create_issue(
     summary="Control plane pods crash on upgrade",
     issue_type="Bug",
     description="""
-h2. Description of problem
+## Description of problem
 
 Control plane pods crash immediately after upgrading from 4.20 to 4.21.
 
-h2. Version-Release number
+## Version-Release number
 
 4.21.0
 
-h2. How reproducible
+## How reproducible
 
 Always
 
-h2. Steps to Reproduce
+## Steps to Reproduce
 
-# Create a cluster on 4.20
-# Upgrade to 4.21
-# Observe control plane pod status
+1. Create a cluster on 4.20
+1. Upgrade to 4.21
+1. Observe control plane pod status
 
-h2. Actual results
+## Actual results
 
 Pods enter CrashLoopBackOff state.
 
-h2. Expected results
+## Expected results
 
 Pods should start successfully.
 
-h2. Additional info
+## Additional info
 
 Logs attached.
     """,
     components="HyperShift",
     additional_fields={
         "versions": [{"name": "4.21"}],           # affects version
-        "customfield_12319940": "4.21",            # target version
+        "customfield_10855": "4.21",            # target version
         "labels": ["ai-generated-jira"],
         "security": {"name": "Red Hat Employee"}   # if required
     }
@@ -329,50 +334,7 @@ Logs attached.
 
 ## Jira Description Formatting
 
-Use Jira's native formatting (Wiki markup):
-
-### Headings
-```
-h1. Main Heading
-h2. Subheading
-h3. Sub-subheading
-```
-
-### Text Formatting
-```
-*bold text*
-_italic text_
-{{monospace}}
-{quote}quoted text{quote}
-```
-
-### Lists
-```
-* Bullet item 1
-* Bullet item 2
-** Nested bullet
-
-# Numbered item 1
-# Numbered item 2
-```
-
-### Code Blocks
-```
-{code}
-command line text or code
-{code}
-
-{code:java}
-// Language-specific syntax highlighting
-public class Example {}
-{code}
-```
-
-### Links
-```
-[Link text|http://example.com]
-[OCPBUGS-123]  // Auto-links to Jira issue
-```
+Use Markdown formatting (the MCP tool converts it to Jira wiki markup automatically). For formatting reference, see [Markdown for Jira Reference](../../reference/markdown-for-jira.md).
 
 ## Error Handling
 
@@ -547,7 +509,7 @@ Any additional context?
 4. 💬 Interactively collect bug template sections
 5. 🔒 Scan for sensitive data
 6. ✅ Validate required fields
-7. 📝 Format description with Jira markup
+7. 📝 Format description with Markdown
 8. ✅ Create bug via MCP tool
 9. 📤 Return issue key and URL
 
