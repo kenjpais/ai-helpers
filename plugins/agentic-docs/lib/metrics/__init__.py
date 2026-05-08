@@ -7,6 +7,12 @@ from .execution_metrics import (
     start_tracking,
     complete_tracking,
 )
+from .session_scraper import (
+    FileAccess,
+    NavigationSequence,
+    SessionTelemetry,
+    SessionScraper,
+)
 
 __all__ = [
     "ExecutionMetrics",
@@ -14,4 +20,8 @@ __all__ = [
     "get_tracker",
     "start_tracking",
     "complete_tracking",
+    "FileAccess",
+    "NavigationSequence",
+    "SessionTelemetry",
+    "SessionScraper",
 ]
