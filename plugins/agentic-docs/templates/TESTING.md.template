@@ -1,0 +1,120 @@
+# {PROJECT_NAME} - Testing Guide
+
+This guide covers test organization, test types, and how to run tests for {REPOSITORY_NAME}.
+
+## Test Organization
+
+The project follows the testing pyramid:
+
+```text
+        {E2E_TEST_TYPE} ({E2E_PERCENTAGE}%, slow, comprehensive)
+              ▲
+         {INTEGRATION_TEST_TYPE} ({INTEGRATION_PERCENTAGE}%, medium)
+              ▲
+          {UNIT_TEST_TYPE} ({UNIT_PERCENTAGE}%, fast, focused)
+```
+
+## Unit Tests
+
+### Location
+
+{UNIT_TEST_LOCATION}
+
+### Running Unit Tests
+
+```bash
+# All unit tests
+{RUN_ALL_UNIT_TESTS}
+
+# Specific test
+{RUN_SPECIFIC_UNIT_TEST}
+
+# With coverage
+{RUN_UNIT_TESTS_WITH_COVERAGE}
+```
+
+### Unit Test Patterns
+
+{UNIT_TEST_PATTERNS}
+
+## Integration Tests
+
+### Location
+
+{INTEGRATION_TEST_LOCATION}
+
+### Running Integration Tests
+
+```bash
+{RUN_INTEGRATION_TESTS}
+```
+
+### Integration Test Patterns
+
+{INTEGRATION_TEST_PATTERNS}
+
+## {E2E_TEST_NAME} Tests
+
+### Location
+
+{E2E_TEST_LOCATION}
+
+### Running {E2E_TEST_NAME} Tests
+
+```bash
+{RUN_E2E_TESTS}
+```
+
+### {E2E_TEST_NAME} Test Patterns
+
+{E2E_TEST_PATTERNS}
+
+## Test Coverage
+
+### Current Coverage
+
+```bash
+{COVERAGE_COMMAND}
+```
+
+**Coverage targets**:
+- Unit tests: {UNIT_COVERAGE_TARGET}%
+- Integration tests: Critical paths
+- {E2E_TEST_NAME} tests: User-facing scenarios
+
+**Current coverage**: {CURRENT_COVERAGE}%
+
+### Coverage Gaps
+
+{COVERAGE_GAPS}
+
+## CI/CD Testing
+
+### PR Testing
+
+{CI_PR_TESTING}
+
+### Periodic Testing
+
+{CI_PERIODIC_TESTING}
+
+## Debugging Failing Tests
+
+### Unit Test Failures
+
+```bash
+{DEBUG_UNIT_TESTS}
+```
+
+### {E2E_TEST_NAME} Test Failures
+
+{DEBUG_E2E_TESTS}
+
+## Project-Specific Test Notes
+
+{PROJECT_SPECIFIC_NOTES}
+
+## See Also
+
+- [Development Guide](./DEVELOPMENT.md)
+- [Architecture](./ARCHITECTURE.md)

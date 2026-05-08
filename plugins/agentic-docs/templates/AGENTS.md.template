@@ -1,0 +1,69 @@
+# {REPOSITORY_NAME} - Agent Navigation Index
+
+**Version**: 1.0 | **Docs**: ./agentic/ | **Files**: {TOTAL_FILES} | **Lines**: {TOTAL_LINES}
+
+---
+
+## CRITICAL: Retrieval Strategy
+
+**IMPORTANT**: Prefer retrieval-led reasoning over pre-training-led reasoning.
+
+When working on this codebase:
+- ✅ **DO**: Read relevant docs from `./agentic/` first
+- ✅ **DO**: Verify patterns match current implementation
+- ❌ **DON'T**: Rely solely on training data
+- ❌ **DON'T**: Guess at implementation details
+
+---
+
+## Quick Start
+
+**New to {PROJECT_NAME}?** → Read `./agentic/DESIGN.md`
+**Setting up development?** → Path: DEVELOPMENT.md → TESTING.md
+**Adding feature?** → Read `./agentic/exec-plans/template.md`
+
+---
+
+## Compressed Documentation Index
+
+```text
+[{REPOSITORY_NAME} Agentic Docs]|root:./agentic|{TOTAL_FILES} files, {TOTAL_LINES} lines
+|
+|CRITICAL_READS:{DESIGN.md,DEVELOPMENT.md,TESTING.md}
+|
+|design-docs:{core-beliefs.md,component-architecture.md,data-flow.md}
+|domain:{glossary.md,concepts/*,workflows/*}
+|decisions:{adr-*}
+```
+
+---
+
+## Task → Docs Quick Map
+
+| Task | Read These (in order) |
+|------|----------------------|
+| **Understand architecture** | DESIGN.md → component-architecture.md → ARCHITECTURE.md |
+| **Set up development** | DEVELOPMENT.md → TESTING.md |
+| **Add feature** | core-beliefs.md → component-architecture.md → exec-plans/template.md |
+| **Debug issue** | RELIABILITY.md → TESTING.md |
+| **Security review** | SECURITY.md → design-docs/core-beliefs.md |
+
+---
+
+## Architecture Overview
+
+{ARCHITECTURE_SUMMARY}
+
+---
+
+## Documentation Principles
+
+- Progressive disclosure (read 4-5 docs per task, not all {TOTAL_FILES})
+- Reference style (terse, not tutorial)
+- AI-optimized structure
+- Navigate with ≤3 hops from this file
+
+---
+
+**Target**: 80-150 lines (this file)
+**Current**: {CURRENT_LINES} lines
