@@ -1,0 +1,81 @@
+# {PROJECT_NAME} Design Philosophy
+
+**Purpose**: Core principles guiding {PROJECT_NAME} architecture and development
+
+**Last Updated**: {LAST_UPDATED}
+
+---
+
+## Table of Contents
+
+1. [{PRINCIPLE_1}](#{PRINCIPLE_1_ANCHOR})
+2. [{PRINCIPLE_2}](#{PRINCIPLE_2_ANCHOR})
+3. [{PRINCIPLE_3}](#{PRINCIPLE_3_ANCHOR})
+4. [{PRINCIPLE_4}](#{PRINCIPLE_4_ANCHOR})
+5. [{PRINCIPLE_5}](#{PRINCIPLE_5_ANCHOR})
+
+---
+
+## {PRINCIPLE_1}
+
+**Core Principle**: {PRINCIPLE_1_DESCRIPTION}
+
+**Why This Matters**:
+{PRINCIPLE_1_RATIONALE}
+
+**Example**:
+```{LANGUAGE}
+{PRINCIPLE_1_EXAMPLE}
+```
+
+---
+
+## {PRINCIPLE_2}
+
+**Principle**: {PRINCIPLE_2_DESCRIPTION}
+
+**Implementation**: {PRINCIPLE_2_IMPLEMENTATION}
+
+**Benefits**:
+{PRINCIPLE_2_BENEFITS}
+
+---
+
+## {PRINCIPLE_3}
+
+**Principle**: {PRINCIPLE_3_DESCRIPTION}
+
+**Pattern**: {PRINCIPLE_3_PATTERN}
+
+**Example**:
+- ❌ Anti-pattern: {PRINCIPLE_3_ANTIPATTERN}
+- ✅ Correct pattern: {PRINCIPLE_3_CORRECTPATTERN}
+
+---
+
+## {PRINCIPLE_4}
+
+**Principle**: {PRINCIPLE_4_DESCRIPTION}
+
+{PRINCIPLE_4_DETAILS}
+
+---
+
+## {PRINCIPLE_5}
+
+**Principle**: {PRINCIPLE_5_DESCRIPTION}
+
+{PRINCIPLE_5_DETAILS}
+
+---
+
+## Cross-Cutting Concerns
+
+{CROSS_CUTTING_CONCERNS}
+
+---
+
+**See Also**:
+- [Component Architecture](./design-docs/component-architecture.md)
+- [Data Flow](./design-docs/data-flow.md)
+- [Core Beliefs](./design-docs/core-beliefs.md)

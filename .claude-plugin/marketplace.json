@@ -92,6 +92,12 @@
       "version": "0.0.3"
     },
     {
+      "name": "agentic-docs",
+      "source": "./plugins/agentic-docs",
+      "description": "Complete lifecycle management for agentic documentation: generation, validation, evaluation, and knowledge graph creation",
+      "version": "0.1.0"
+    },
+    {
       "name": "openshift",
       "source": "./plugins/openshift",
       "description": "OpenShift development utilities and helpers",

@@ -1,0 +1,111 @@
+# {PROJECT_NAME} - Development Guide
+
+This guide covers development setup, build process, and workflows for {REPOSITORY_NAME}.
+
+## Quick Start
+
+### Prerequisites
+
+{PREREQUISITES_LIST}
+
+### Build
+
+```bash
+{BUILD_COMMAND}
+```
+
+**Build output**: {BUILD_OUTPUT_PATH}
+
+## Repository Structure
+
+```text
+{REPO_TREE}
+```
+
+## Development Workflow
+
+### 1. Local Development
+
+Edit code, build locally:
+
+```bash
+{LOCAL_BUILD_COMMAND}
+```
+
+Run tests:
+
+```bash
+{TEST_COMMAND}
+```
+
+### 2. Running Locally
+
+{LOCAL_RUN_INSTRUCTIONS}
+
+### 3. Debugging
+
+**View logs**:
+```bash
+{LOG_COMMAND}
+```
+
+**Debug with {DEBUGGER}**:
+```bash
+{DEBUG_COMMAND}
+```
+
+## Code Organization
+
+{CODE_ORGANIZATION_DETAILS}
+
+## Common Tasks
+
+### Add New Dependency
+
+```bash
+{ADD_DEPENDENCY_COMMAND}
+```
+
+### Update Dependencies
+
+```bash
+{UPDATE_DEPS_COMMAND}
+```
+
+### Run Linters
+
+```bash
+{LINT_COMMAND}
+```
+
+### Format Code
+
+```bash
+{FORMAT_COMMAND}
+```
+
+## Build & Release
+
+### Local Build
+
+```bash
+{LOCAL_BUILD_FULL}
+```
+
+### CI Build
+
+{CI_BUILD_DESCRIPTION}
+
+### Release Process
+
+{RELEASE_PROCESS}
+
+## Project-Specific Notes
+
+{PROJECT_SPECIFIC_NOTES}
+
+## See Also
+
+- [Testing Guide](./TESTING.md)
+- [Architecture](./ARCHITECTURE.md)
+- [Design Philosophy](./design-docs/core-beliefs.md)

@@ -1,0 +1,29 @@
+scenario:
+  id: "fix-race-condition"
+  description: "Fix a race condition in concurrent cache access"
+  input:
+    task_description: "Fix a race condition that occurs when multiple goroutines access the in-memory cache simultaneously"
+    context:
+      - "The application uses an in-memory cache for performance"
+      - "Race detector reports data races in production"
+      - "Multiple goroutines read and write cache entries concurrently"
+  expected_outcomes:
+    - id: "identifies-concurrency-issue"
+      description: "Plan correctly identifies this as a concurrency/synchronization problem"
+      assertion: "llm-rubric: The execution plan identifies the issue as a concurrency or synchronization problem requiring thread-safe access"
+
+    - id: "proposes-synchronization-mechanism"
+      description: "Plan proposes a synchronization mechanism (mutex, RWMutex, sync.Map, etc.)"
+      assertion: "llm-rubric: The execution plan proposes a specific synchronization mechanism such as mutex, RWMutex, or sync.Map"
+
+    - id: "addresses-read-write-patterns"
+      description: "Plan considers read vs write access patterns"
+      assertion: "llm-rubric: The execution plan considers the distinction between read and write operations and chooses appropriate synchronization"
+
+    - id: "includes-race-detection-testing"
+      description: "Plan includes running with race detector to verify the fix"
+      assertion: "llm-rubric: The execution plan includes testing with Go's race detector (-race flag) to verify the fix"
+
+    - id: "considers-performance-impact"
+      description: "Plan considers performance implications of synchronization"
+      assertion: "llm-rubric: The execution plan mentions performance implications of the chosen synchronization approach"

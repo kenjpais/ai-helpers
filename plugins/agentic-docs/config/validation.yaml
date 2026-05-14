@@ -1,0 +1,103 @@
+# Agentic Documentation Validation Configuration
+# This file controls validation behavior for /agentic-docs:validate
+# Users can modify these parameters; the agent CANNOT modify them during execution
+
+# Navigation Constraints
+navigation:
+  max_hops: 3  # Maximum hops from AGENTS.md to any information
+  entry_point: "AGENTS.md"  # Primary entry point for navigation
+
+# Line Budget Constraints
+line_budget:
+  agents_md: 150  # Maximum lines for AGENTS.md
+  component_docs: 100  # Maximum lines per component doc
+  concept_docs: 75  # Maximum lines per concept doc
+  query_responses: 500  # Maximum lines for query responses
+
+# Required Directory Structure
+directory_structure:
+  required_dirs:
+    - "agentic"
+    - "agentic/design-docs"
+    - "agentic/design-docs/components"
+    - "agentic/domain"
+    - "agentic/domain/concepts"
+    - "agentic/domain/workflows"
+    - "agentic/exec-plans"
+    - "agentic/exec-plans/active"
+    - "agentic/exec-plans/completed"
+    - "agentic/product-specs"
+    - "agentic/decisions"
+    - "agentic/references"
+    - "agentic/generated"
+
+  required_files:
+    root:
+      - "AGENTS.md"
+      - "ARCHITECTURE.md"
+    agentic:
+      - "DESIGN.md"
+      - "DEVELOPMENT.md"
+      - "TESTING.md"
+      - "RELIABILITY.md"
+      - "SECURITY.md"
+      - "QUALITY_SCORE.md"
+    design_docs:
+      - "index.md"
+      - "core-beliefs.md"
+      - "component-architecture.md"
+      - "data-flow.md"
+    domain:
+      - "index.md"
+      - "glossary.md"
+
+# Quality Score Thresholds
+quality_score:
+  minimum_score: 70  # Minimum quality score to pass (0-100)
+  coverage_weight: 40  # Coverage points (≥80% components documented)
+  freshness_weight: 20  # Freshness points (updated <90 days)
+  completeness_weight: 20  # Completeness points (all required files)
+  linkage_weight: 10  # Linkage points (no broken links)
+  navigation_weight: 10  # Navigation points (≤3 hop depth)
+
+# Validation Checks
+validation_checks:
+  check_directory_structure: true
+  check_navigation_depth: true
+  check_line_budgets: true
+  check_broken_links: true
+  check_coverage: true
+  check_frontmatter: true
+  check_file_naming: true
+  check_quality_score: true
+
+# File Naming Conventions
+naming_conventions:
+  format: "kebab-case"  # File naming format
+  allowed_extensions:
+    - ".md"
+    - ".json"
+    - ".yaml"
+
+# Frontmatter Requirements
+frontmatter:
+  required_fields:
+    - "name"
+    - "description"
+    - "type"
+
+# Coverage Requirements
+coverage:
+  minimum_component_coverage: 0.8  # 80% of components must be documented
+  minimum_concept_coverage: 0.7  # 70% of concepts must be documented
+
+# Freshness Requirements
+freshness:
+  max_age_days: 90  # Maximum age for documentation freshness
+
+# Logging Configuration
+logging:
+  level: "INFO"  # Logging level (DEBUG, INFO, WARNING, ERROR)
+  output_format: "structured"  # Log format (structured, plain)
+  save_logs: true  # Save logs to file
+  log_directory: "logs"  # Directory for log files

@@ -1,0 +1,76 @@
+scenario:
+  id: "scenario-002"
+  description: "Fix race condition in concurrent cache access"
+  category: "concurrency"
+
+  input:
+    task_description: "Fix a race condition that occurs when multiple goroutines access the in-memory cache simultaneously"
+    context:
+      - "The application uses an in-memory cache for performance"
+      - "Race detector reports data races in production"
+      - "Multiple goroutines read and write cache entries concurrently"
+
+  expected_outcomes:
+    - id: "identifies-concurrency-issue"
+      description: "Plan correctly identifies this as a concurrency/synchronization problem"
+      assertion: "llm-rubric: The execution plan identifies the issue as a concurrency or synchronization problem requiring thread-safe access"
+      weight: 3.0
+      critical: true
+
+    - id: "proposes-synchronization-mechanism"
+      description: "Plan proposes a synchronization mechanism (mutex, RWMutex, sync.Map, etc.)"
+      assertion: "llm-rubric: The execution plan proposes a specific synchronization mechanism such as mutex, RWMutex, or sync.Map"
+      weight: 2.0
+      critical: true
+
+    - id: "addresses-read-write-patterns"
+      description: "Plan considers read vs write access patterns"
+      assertion: "llm-rubric: The execution plan considers the distinction between read and write operations and chooses appropriate synchronization"
+      weight: 1.0
+      critical: false
+
+    - id: "includes-race-detection-testing"
+      description: "Plan includes running with race detector to verify the fix"
+      assertion: "llm-rubric: The execution plan includes testing with Go's race detector (-race flag) to verify the fix"
+      weight: 2.0
+      critical: false
+
+    - id: "considers-performance-impact"
+      description: "Plan considers performance implications of synchronization"
+      assertion: "llm-rubric: The execution plan mentions performance implications of the chosen synchronization approach"
+      weight: 1.0
+      critical: false
+
+  forbidden_outcomes:
+    - id: "recommends-removing-concurrency"
+      description: "Plan must not recommend removing concurrency as a solution"
+      assertion: "llm-rubric: The plan does NOT recommend removing concurrent access or making cache access single-threaded"
+
+    - id: "recommends-ignoring-races"
+      description: "Plan must not recommend ignoring race conditions"
+      assertion: "llm-rubric: The plan does NOT recommend ignoring the race detector or disabling race detection"
+
+  grounding:
+    required_components:
+      - "cache"
+    forbidden_components:
+      - "CacheSynchronizerService"  # Non-existent service
+
+  evaluation:
+    runs_per_scenario: 3
+    pass_threshold: 0.67
+    evaluator:
+      model: "claude-sonnet-4-6"
+      temperature: 0.0
+      prompt_version: "v2.1"
+
+assertion_variants:
+  identifies-concurrency-issue:
+    - "llm-rubric: The plan identifies this as a concurrency problem"
+    - "llm-rubric: The plan recognizes the need for thread-safe access"
+    - "llm-rubric: The plan discusses synchronization requirements"
+
+  includes-race-detection-testing:
+    - "llm-rubric: The plan includes race detector testing"
+    - "llm-rubric: The plan discusses using -race flag to verify the fix"
+    - "llm-rubric: The plan mentions validating thread safety with race detection"

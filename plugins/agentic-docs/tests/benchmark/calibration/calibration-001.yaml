@@ -1,0 +1,47 @@
+scenario:
+  id: "calibration-001"
+  description: "Calibration: Basic component identification"
+  category: "calibration"
+
+  input:
+    task_description: "Document the purpose and responsibilities of the authentication service"
+    context:
+      - "The system has an authentication service that handles user login"
+      - "Users authenticate with username and password"
+
+  expected_outcomes:
+    - id: "identifies-auth-service"
+      description: "Plan mentions the authentication service"
+      assertion: "contains: authentication service"
+      weight: 1.0
+      critical: true
+
+    - id: "mentions-login"
+      description: "Plan mentions login functionality"
+      assertion: "regex: login|authentication"
+      weight: 1.0
+      critical: false
+
+  forbidden_outcomes:
+    - id: "invents-oauth-service"
+      description: "Plan must not reference non-existent OAuth service"
+      assertion: "not-contains: OAuthService"
+
+  grounding:
+    required_components:
+      - "authentication-service"
+    forbidden_components:
+      - "OAuthService"
+
+  evaluation:
+    runs_per_scenario: 1
+    pass_threshold: 1.0
+    evaluator:
+      model: "claude-sonnet-4-6"
+      temperature: 0.0
+      prompt_version: "v2.1"
+
+# Known-good output (for reference, not used in evaluation)
+reference_output: |
+  The authentication service handles user login and session management.
+  Users authenticate using username and password credentials.

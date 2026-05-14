@@ -1,0 +1,117 @@
+{
+  "skill_name": "agentic-docs:create",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "hey can you set up the agentic documentation for this repo? it's a python microservice that handles order processing - we have about 50 files, mostly in src/orders/ and src/payments/. I want to make sure the AI assistant can understand the architecture when helping devs work on it. The repo is at /Users/kpais/kpais-workspace/ai-helpers/.work/skill-refinement-create/workspace/test-order-service",
+      "expected_output": "Should invoke /agentic-docs:create with the repo path, explain the workflow phases clearly, show progress through each phase, handle the structure creation properly, invoke all 12 generation skills, validate output, generate eval suite, and display final metrics summary. Should be clear about what's happening at each step.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "mentions_8_phases",
+          "description": "Response explains the 8-phase workflow structure"
+        },
+        {
+          "name": "mentions_18_files",
+          "description": "Response mentions creating 18 documentation files"
+        },
+        {
+          "name": "provides_time_estimate",
+          "description": "Response provides estimated duration for the workflow"
+        },
+        {
+          "name": "explains_orchestrator_pattern",
+          "description": "Response explains that this is an orchestrator that invokes sub-skills"
+        },
+        {
+          "name": "mentions_validation_phase",
+          "description": "Response mentions validation will occur"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I tried running /agentic-docs:create on my repo but it failed halfway through - something about generate-reliability-md not finding any monitoring config. What do I do now? Do I need to delete everything and start over or can I just regenerate the reliability doc?",
+      "expected_output": "Should explain the error handling strategy clearly - identify that generate-reliability-md is a non-critical skill, explain that partial docs are preserved, show how to check what was created, offer specific recovery options (re-run entire create, or run just the failed skill individually), reference the log file for debugging. Should NOT tell user to delete partial output.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "identifies_non_critical",
+          "description": "Response identifies generate-reliability-md failure as non-critical"
+        },
+        {
+          "name": "no_delete_recommendation",
+          "description": "Response does NOT recommend deleting partial documentation"
+        },
+        {
+          "name": "provides_recovery_options",
+          "description": "Response provides at least 2 specific recovery options with commands"
+        },
+        {
+          "name": "explains_partial_preservation",
+          "description": "Response explains that partial documentation is preserved intact"
+        },
+        {
+          "name": "references_critical_vs_noncritical",
+          "description": "Response distinguishes between critical and non-critical failures"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "we have a really large go monorepo (probably 500+ files) and i need to generate agentic docs for it but i'm in a hurry. is there a faster way to do this? I don't need the evaluation suite right now, just the core documentation",
+      "expected_output": "Should recommend using --parallel flag for faster execution, explain the parallel mode benefits (40-60% faster), also recommend --skip-evals to skip evaluation generation, show the command with both flags, explain the trade-offs (higher memory usage), provide time estimates (sequential vs parallel)",
+      "files": [],
+      "assertions": [
+        {
+          "name": "mentions_skip_evals_flag",
+          "description": "Response mentions --skip-evals flag to skip evaluation suite"
+        },
+        {
+          "name": "mentions_parallel_flag",
+          "description": "Response mentions --parallel flag for concurrent execution"
+        },
+        {
+          "name": "provides_time_comparison",
+          "description": "Response compares execution times for different approaches"
+        },
+        {
+          "name": "explains_tradeoffs",
+          "description": "Response explains trade-offs of using performance flags (memory, complexity, etc.)"
+        },
+        {
+          "name": "recommends_both_flags",
+          "description": "Response recommends using both --skip-evals and --parallel for large repos"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Can you explain what /agentic-docs:create does and walk me through what would happen if I ran it on a repository?",
+      "expected_output": "Should handle the terse command-style input, invoke the skill with the provided path, execute the full workflow (all phases 0-8), show clear progress indicators, handle any issues gracefully, display final metrics. Should work just as well as a verbose request.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "explains_purpose",
+          "description": "Response clearly explains the purpose of agentic-docs:create"
+        },
+        {
+          "name": "describes_workflow_phases",
+          "description": "Response walks through the workflow phases in order"
+        },
+        {
+          "name": "lists_output_files",
+          "description": "Response lists what documentation files will be created"
+        },
+        {
+          "name": "mentions_duration",
+          "description": "Response provides time estimate"
+        },
+        {
+          "name": "well_organized",
+          "description": "Response is well-structured with clear sections/headers"
+        }
+      ]
+    }
+  ]
+}
