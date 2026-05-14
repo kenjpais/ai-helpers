@@ -33,4 +33,34 @@ update: ## Update plugin documentation and website data
 	@echo "Building website data..."
 	@python3 scripts/build-website.py
 
+.PHONY: eval
+eval: ## Run all agentic documentation evaluation tests (~30-60 min)
+	@echo "Running all evaluation tests..."
+	@cd plugins/agentic-docs && npx promptfoo@latest eval -c promptfooconfig.yaml
+
+.PHONY: eval-navigation
+eval-navigation: ## Run navigation tests only
+	@echo "Running navigation tests..."
+	@cd plugins/agentic-docs && npx promptfoo@latest eval -c promptfooconfig.yaml --filter-description "Navigation:"
+
+.PHONY: eval-authoring
+eval-authoring: ## Run enhancement authoring tests only
+	@echo "Running authoring tests..."
+	@cd plugins/agentic-docs && npx promptfoo@latest eval -c promptfooconfig.yaml --filter-description "Authoring:"
+
+.PHONY: eval-anti-pattern
+eval-anti-pattern: ## Run anti-pattern tests only
+	@echo "Running anti-pattern tests..."
+	@cd plugins/agentic-docs && npx promptfoo@latest eval -c promptfooconfig.yaml --filter-description "Anti-pattern:"
+
+.PHONY: eval-view
+eval-view: ## Open evaluation results in web UI
+	@cd plugins/agentic-docs && npx promptfoo@latest view
+
+.PHONY: eval-clean
+eval-clean: ## Clear evaluation cache and results
+	@echo "Cleaning evaluation cache..."
+	@rm -rf plugins/agentic-docs/.work/eval/
+	@cd plugins/agentic-docs && npx promptfoo@latest cache clear
+
 .DEFAULT_GOAL := help

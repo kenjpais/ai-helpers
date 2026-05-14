@@ -1,862 +1,452 @@
 ---
 name: agentic-docs:evaluate
-description: "Evaluate documentation quality using behavioral validation with multi-run variance testing, grounding validation, and weighted scoring"
+description: "Evaluate agentic documentation quality using promptfoo-based behavioral validation with natural discovery testing"
 trigger: /agentic-docs:evaluate
 ---
 
-# Agentic-Docs: Evaluate (v2.0)
+# Agentic-Docs: Evaluate (v3.0)
 
 **Trigger**: `/agentic-docs:evaluate`  
-**Purpose**: Evaluate documentation quality by testing whether execution plans produced from documentation exhibit correct, grounded, and consistent observable behavior
+**Purpose**: Evaluate documentation quality by testing whether AI agents naturally discover and correctly apply repository conventions
+
+**Framework**: OpenShift Enhancements Agentic Docs Evaluation  
+**Reference**: https://github.com/openshift/enhancements/pull/1992
 
 ## Core Principle
 
-This system evaluates:
+This evaluation validates **documentation-first natural discovery behavior**:
 
-> Would a competent engineer successfully execute this plan?
+> Agents are NOT told to read documentation.  
+> They must naturally discover CLAUDE.md and apply guidance correctly.
 
-Validation criteria:
-- **Correctness**: Plan produces correct observable outcomes
-- **Grounding**: Plan references only documented components (no hallucinations)
-- **Feasibility**: Plan is executable and practical
-- **Consistency**: Plan produces consistent results across runs
-- **Safety**: Plan avoids prohibited behaviors and unsafe recommendations
-- **Robustness**: Plan handles edge cases and error conditions
-- **Efficiency**: Plan uses documentation effectively
-- **Reproducibility**: Results are stable and evaluator drift is monitored
+Tests measure:
+- **Natural discovery**: Does agent find documentation without instruction?
+- **Correct navigation**: Does agent follow documentation structure?
+- **Pattern application**: Does agent apply repository conventions correctly?
+- **Anti-pattern rejection**: Does agent reject incorrect patterns?
 
-NOT evaluated:
-- Structural similarity to reference plans
-- Keyword matching
-- Length or verbosity
-- Stylistic preferences
+## Architecture
 
-## System Architecture
-
-### Strict Separation of Concerns
+### Strict Separation of Responsibility
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│ Judge Sub-Agent (Orchestrator + Evaluator)                   │
-│                                                               │
-│  • Loads test scenarios from /tests/benchmark                │
-│  • Extracts scenario.input                                   │
-│  • Sends ONLY input to coding sub-agent                      │
-│  • Receives execution plan                                   │
-│  • Validates grounding (documented components only)          │
-│  • Runs Promptfoo assertions (expected + forbidden)          │
-│  • Collects efficiency telemetry                             │
-│  • Repeats for multi-run variance testing                    │
-│  • Aggregates weighted scores                                │
-│  • Determines pass/fail with critical outcome enforcement    │
-│                                                               │
-│  HAS ACCESS TO: test scenarios, expected outcomes,           │
-│                 forbidden outcomes, documentation index      │
-│                                                               │
-│  NO ACCESS TO: tests/benchmark/ paths (sandboxed)            │
-└──────────────────────────────────────────────────────────────┘
-                              │
-                              │ scenario.input ONLY
-                              │ (NO evaluation hints)
-                              ↓
-┌──────────────────────────────────────────────────────────────┐
-│ Coding Sub-Agent (Plan Generator)                            │
-│                                                               │
-│  • Receives scenario input                                   │
-│  • Reads agentic documentation                               │
-│  • Generates execution plan                                  │
-│  • Returns plan as output                                    │
-│                                                               │
-│  NO ACCESS TO: expected outcomes, test cases, evaluation     │
-│                logic, Promptfoo config, tests/benchmark/     │
-│                                                               │
-│  SANDBOXED: Cannot access filesystem paths containing        │
-│             evaluation artifacts                             │
-└──────────────────────────────────────────────────────────────┘
-                              │
-                              │ execution_plan output
-                              ↓
-┌──────────────────────────────────────────────────────────────┐
-│ Grounding Validator                                           │
-│                                                               │
-│  • Extracts component references from execution plan         │
-│  • Validates against documented components                   │
-│  • Detects hallucinated/fabricated components                │
-│  • Detects forbidden component references                    │
-│  • Returns grounding validation result                       │
-│                                                               │
-│  DATA SOURCES: ARCHITECTURE.md, design-docs/components/      │
-└──────────────────────────────────────────────────────────────┘
-                              │
-                              │ grounding_result
-                              ↓
-┌──────────────────────────────────────────────────────────────┐
-│ Promptfoo (Assertion Engine)                                 │
-│                                                               │
-│  DETERMINISTIC ASSERTIONS:                                   │
-│    • regex - Pattern matching (100% reproducible)            │
-│    • contains - Substring matching (100% reproducible)       │
-│    • json-schema - Structure validation (100% reproducible)  │
-│    • javascript - Scripted validation (100% reproducible)    │
-│    • python - Custom logic (100% reproducible)               │
-│                                                               │
-│  PROBABILISTIC ASSERTIONS:                                   │
-│    • llm-rubric - Semantic evaluation (variance expected)    │
-│                                                               │
-│  • Evaluates expected_outcomes (must satisfy)                │
-│  • Evaluates forbidden_outcomes (must NOT satisfy)           │
-│  • Uses assertion diversification (random variants)          │
-│  • Returns pass/fail per assertion                           │
-│                                                               │
-│  LOGS: evaluator model, temperature, prompt version          │
-└──────────────────────────────────────────────────────────────┘
-                              │
-                              │ assertion_results
-                              ↓
-┌──────────────────────────────────────────────────────────────┐
-│ Aggregation Engine                                            │
-│                                                               │
-│  • Calculates weighted score from outcomes                   │
-│  • Enforces critical outcome failures                        │
-│  • Computes multi-run statistics (pass rate, variance)       │
-│  • Detects flaky assertions                                  │
-│  • Collects efficiency telemetry (docs relevance, etc.)      │
-│  • Stratifies results by category                            │
-│  • Validates against calibration set                         │
-│  • Determines final scenario result                          │
-└──────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│ Coding Sub-Agent                                      │
+│                                                       │
+│  • Receives task description ONLY                    │
+│  • NOT told to read specific files                   │
+│  • Must naturally discover documentation             │
+│  • Generates execution plan                          │
+│  • Includes "## Documentation Used" section          │
+│                                                       │
+│  NO ACCESS TO: evaluation criteria, test cases       │
+└──────────────────────────────────────────────────────┘
+                        │
+                        │ execution_plan
+                        ↓
+┌──────────────────────────────────────────────────────┐
+│ Promptfoo (Evaluation Engine)                        │
+│                                                       │
+│  • Runs assertions from promptfooconfig.yaml         │
+│  • Uses icontains, contains-any, llm-rubric          │
+│  • Computes weighted scores                          │
+│  • Outputs results to .work/eval/results.json        │
+│                                                       │
+│  SINGLE SOURCE OF TRUTH for all evaluation logic     │
+└──────────────────────────────────────────────────────┘
+                        │
+                        │ results.json
+                        ↓
+┌──────────────────────────────────────────────────────┐
+│ Claude Judge Sub-Agent                                │
+│                                                       │
+│  • Interprets promptfoo outputs                      │
+│  • Validates OpenShift enhancement conventions       │
+│  • Explains why tests passed/failed                  │
+│  • Provides recommendations                          │
+│                                                       │
+│  MUST NOT reimplement evaluation logic               │
+└──────────────────────────────────────────────────────┘
 ```
 
-**Critical Constraints**:
-1. Coding sub-agent is **intentionally unaware** of evaluation criteria
-2. Coding sub-agent is **sandboxed** from tests/benchmark/ directory
-3. Only judge sub-agent has access to test scenarios and expected outcomes
-4. Scenario IDs are opaque (`scenario-NNN`) to prevent intent leakage
+## Test Categories
 
-## Input
+All tests defined in **`promptfooconfig.yaml`** at repository root.
 
-**Repository Path** (optional - defaults to current directory)
+### 1. Navigation Tests (2 scenarios)
 
-```
-/agentic-docs:evaluate [<repo-path>]
-```
+**Purpose**: Verify agent discovers documentation naturally
 
-**Optional Flags**:
-```
---runs N              # Override runs_per_scenario (default: from scenario config)
---category CATEGORY   # Evaluate only scenarios in category
---calibration-only    # Run only calibration set
-```
+**Tests**:
+- Enhancement process documentation discovery
+- Operator pattern documentation location
 
-## Evaluation Schema
+**Success criteria**:
+- Agent finds documentation without explicit instruction
+- Agent includes "## Documentation Used" section
+- Agent references specific files consulted
 
-See [tests/EVALUATION_SCHEMA.md](../../tests/EVALUATION_SCHEMA.md) for complete schema documentation.
+### 2. Enhancement Authoring Tests (1 scenario)
 
-**Key Fields**:
-- `expected_outcomes` - Required behaviors (with weight and critical flags)
-- `forbidden_outcomes` - Prohibited behaviors (any violation = FAIL)
-- `grounding` - Documentation grounding requirements
-- `evaluation` - Multi-run config, evaluator settings
-- `category` - Scenario category for stratification
+**Purpose**: Verify agent applies OpenShift conventions correctly
 
-## Workflow
+**Test**: Design a fictional "ClusterPowerScheduler" enhancement
 
-### Phase 0: Initialize Evaluation
+**Success criteria**:
+- Starts API at v1alpha1 (NOT v1)
+- Uses standard ClusterOperator conditions (Available/Progressing/Degraded)
+- Includes API graduation criteria
+- References relevant documentation
 
-**Actions**:
-1. Create timestamped log file: `logs/agentic-docs-evaluate-<timestamp>.log`
-2. Load test scenarios from `tests/benchmark/*.yaml`
-3. Load calibration set from `tests/benchmark/calibration/*.yaml`
-4. Initialize Promptfoo configuration
-5. Load evaluator configuration (model, temperature, prompt version)
-6. Display agent architecture and evaluation mode
+### 3. Anti-Pattern Tests (3 scenarios)
 
-**Output to CLI**:
-```
-🧪 Agentic-Docs: Evaluate (Behavioral Validation v2.0)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Repository: <ACTUAL_REPOSITORY_PATH>
-Timestamp: <ACTUAL_TIMESTAMP>
-Evaluation Mode: Multi-run variance testing
-Runs per scenario: <RUNS_PER_SCENARIO>
-Test scenarios: <SCENARIO_COUNT> loaded from tests/benchmark/
-Calibration set: <CALIBRATION_COUNT> scenarios
-Evaluator: <MODEL> (temp=<TEMP>, prompt=<PROMPT_VERSION>)
-Log file: <ACTUAL_LOG_PATH>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**Purpose**: Verify agent rejects incorrect patterns
 
-Assertion Types:
-  Deterministic: regex, contains, json-schema, javascript, python
-  Probabilistic: llm-rubric (variance expected)
+**Tests**:
+- **v1 API start rejection**: Must reject starting at v1, require v1alpha1
+- **Custom conditions rejection**: Must reject custom ClusterOperator conditions
+- **Breaking changes rejection**: Must reject API changes without deprecation
 
-Leakage Resistance:
-  ✓ Opaque scenario IDs (scenario-NNN)
-  ✓ Coding sub-agent sandboxed from tests/benchmark/
-  ✓ No evaluation hints in scenario.input
+**Critical**: Any anti-pattern acceptance = FAIL
 
-Enhancements:
-  ✓ Multi-run variance testing
-  ✓ Grounding validation (hallucination detection)
-  ✓ Weighted scoring with critical outcomes
-  ✓ Forbidden outcomes
-  ✓ Assertion diversification
-  ✓ Efficiency telemetry
-  ✓ Category stratification
-  ✓ Evaluator calibration tracking
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
+## Single Configuration File
 
-**Metrics grounding**: All placeholders MUST be replaced with actual values from current run.
+All evaluation logic lives in `plugins/agentic-docs/promptfooconfig.yaml`.
 
-**Logged**:
-```
-[<TIMESTAMP>] INFO: Command invoked: /agentic-docs:evaluate
-[<TIMESTAMP>] INFO: Repository: <REPO_PATH>
-[<TIMESTAMP>] INFO: Evaluation mode: multi-run variance testing
-[<TIMESTAMP>] INFO: Scenarios loaded: <COUNT> from tests/benchmark/
-[<TIMESTAMP>] INFO: Calibration set: <COUNT> scenarios
-[<TIMESTAMP>] INFO: Evaluator: model=<MODEL>, temperature=<TEMP>, prompt_version=<VERSION>
-```
-
-### Phase 1: Run Calibration Set
-
-**Purpose**: Validate evaluator is functioning correctly before main evaluation
-
-**Actions**:
-1. Run calibration scenarios (known-good outputs)
-2. Compute calibration accuracy
-3. Detect evaluator drift
-4. Fail evaluation if calibration fails
-
-**Expected Calibration Pass Rate**: ≥95%
-
-**Output to CLI**:
-```
-Phase 1: Evaluator Calibration
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✓ Calibration set: <COUNT> scenarios
-✓ Pass rate: <PASS_RATE>% (expected ≥95%)
-✓ Drift detected: <YES/NO>
-✓ Evaluator: <MODEL> validated
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-**Logged**:
-```
-[<TIMESTAMP>] INFO: Calibration started: <COUNT> scenarios
-[<TIMESTAMP>] INFO: Calibration complete: pass_rate=<RATE>, expected=0.95
-[<TIMESTAMP>] INFO: Drift detected: <YES/NO>
-```
-
-**If calibration fails**:
-```
-❌ Calibration Failed
-
-Pass rate: <RATE>% (expected ≥95%)
-Drift detected: YES
-
-The evaluator is not producing consistent results.
-This may indicate:
-  - Evaluator model changed
-  - Prompt version mismatch
-  - Temperature setting incorrect
-
-Aborting evaluation until calibration is resolved.
-```
-
-### Phase 2: Evaluate Scenarios (Multi-Run)
-
-For each scenario:
-
-#### Step 1: Load Scenario and Select Assertions
-
-**Judge Sub-Agent Actions**:
-1. Load scenario from `tests/benchmark/<scenario-id>.yaml`
-2. Parse scenario schema (expected_outcomes, forbidden_outcomes, grounding, evaluation config)
-3. Select assertion variants (if assertion_variants defined)
-4. Prepare scenario.input for coding sub-agent
-
-**Assertion Diversification**:
-- If `assertion_variants` defined for outcome, randomly select one variant
-- Purpose: Reduce benchmark memorization and keyword gaming
-
-**Example**:
+**Structure**:
 ```yaml
-# Scenario defines multiple equivalent assertions
-assertion_variants:
-  includes-testing-strategy:
-    - "llm-rubric: The plan includes a testing strategy"
-    - "llm-rubric: The plan discusses endpoint validation"
-    - "llm-rubric: The plan proposes verification approach"
+providers:
+  - id: anthropic:messages:claude-sonnet-4-6
+    config:
+      temperature: 0.0
 
-# Random selection per run:
-Run 1: Uses "The plan includes a testing strategy"
-Run 2: Uses "The plan discusses endpoint validation"
-Run 3: Uses "The plan proposes verification approach"
+prompts:
+  - "{{execution_plan}}"
+
+tests:
+  # Navigation tests
+  - description: "Navigation: ..."
+    vars:
+      task_description: "..."
+    assert:
+      - type: icontains
+        value: "## Documentation Used"
+        weight: 3.0
+      # ... more assertions
+
+  # Authoring tests
+  - description: "Authoring: ..."
+    # ...
+
+  # Anti-pattern tests
+  - description: "Anti-pattern: ..."
+    # ...
 ```
 
-**Output to CLI**:
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Scenario <SCENARIO_ID>/<TOTAL>: <DESCRIPTION>
-Category: <CATEGORY>
-Runs: <RUNS_PER_SCENARIO>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
+**Key points**:
+- Single file, no split configs
+- Promptfoo-native assertions only (`icontains`, `contains-any`, `llm-rubric`)
+- Each assertion has explicit weight
+- Tests organized by category (filter with `--filter-description`)
 
-**Logged**:
-```
-[<TIMESTAMP>] INFO: Scenario <SCENARIO_ID>: <DESCRIPTION> - STARTED
-[<TIMESTAMP>] INFO: Judge Sub-Agent: Loading scenario from tests/benchmark/<SCENARIO_ID>.yaml
-[<TIMESTAMP>] INFO: Judge Sub-Agent: Scenario loaded - <COUNT> expected outcomes, <COUNT> forbidden outcomes
-[<TIMESTAMP>] INFO: Judge Sub-Agent: Runs configured: <RUNS_PER_SCENARIO>
-[<TIMESTAMP>] INFO: Judge Sub-Agent: Assertion diversification: <COUNT> variants selected
-```
+## Execution
 
-#### Step 2: Execute Runs
+### Make Targets
 
-**For each run** (1 to `runs_per_scenario`):
-
-**Judge Sub-Agent Actions**:
-1. Spawn coding sub-agent in sandboxed environment
-2. Send ONLY `scenario.input` (task_description + context)
-3. Coding sub-agent generates execution plan
-4. Judge receives execution_plan.txt output
-5. Save execution plan to `.work/evaluate/<scenario-id>-run-<N>-execution-plan.txt`
-
-**Sandboxing**:
-- Coding sub-agent CANNOT access: `tests/benchmark/`, `promptfooconfig.yaml`, `.work/evaluate/`
-- Prevents leakage of evaluation intent
-
-**Output to CLI** (per run):
-```
-Run <RUN_NUM>/<TOTAL>:
-  ↳ Spawning coding sub-agent (sandboxed)
-  ↳ Generating execution plan...
-  ↳ Plan generated (<LINES> lines)
-```
-
-**Logged** (per run):
-```
-[<TIMESTAMP>] INFO: Run <RUN_NUM>/<RUNS_PER_SCENARIO>: Spawning coding sub-agent
-[<TIMESTAMP>] INFO: Coding Sub-Agent: Received task: <TASK_DESCRIPTION>
-[<TIMESTAMP>] INFO: Coding Sub-Agent: Reading documentation...
-[<TIMESTAMP>] INFO: Coding Sub-Agent: Tools used: Read (<COUNT> files), Grep (<COUNT> invocations)
-[<TIMESTAMP>] INFO: Coding Sub-Agent: Execution plan generated (<LINES> lines)
-[<TIMESTAMP>] INFO: Judge Sub-Agent: Plan saved to .work/evaluate/<SCENARIO_ID>-run-<N>-execution-plan.txt
-```
-
-#### Step 3: Validate Grounding
-
-**Judge Sub-Agent Actions**:
-1. Extract component references from execution plan
-2. Load documented components from ARCHITECTURE.md, design-docs/components/
-3. Validate required_components are referenced
-4. Validate forbidden_components are NOT referenced
-5. Detect hallucinated (undocumented) components
-6. Compute grounding metrics
-
-**Output to CLI** (per run):
-```
-  ↳ Grounding validation...
-    • Required components: <SATISFIED>/<TOTAL> ✓
-    • Forbidden components: <VIOLATIONS> violations
-    • Hallucinated components: <COUNT>
-    • Grounding score: <SCORE>%
-```
-
-**Grounding FAIL conditions**:
-- Required component missing
-- Forbidden component referenced
-- Hallucinated component detected
-
-**Logged** (per run):
-```
-[<TIMESTAMP>] INFO: Grounding Validator: Extracting component references from plan
-[<TIMESTAMP>] INFO: Grounding Validator: Referenced components: [<LIST>]
-[<TIMESTAMP>] INFO: Grounding Validator: Documented components: [<LIST>]
-[<TIMESTAMP>] INFO: Grounding Validator: Required components satisfied: <COUNT>/<TOTAL>
-[<TIMESTAMP>] INFO: Grounding Validator: Forbidden components violated: <COUNT>
-[<TIMESTAMP>] INFO: Grounding Validator: Hallucinated components: [<LIST>]
-[<TIMESTAMP>] INFO: Grounding Validator: Result: <PASS/FAIL>
-```
-
-#### Step 4: Run Assertions
-
-**Judge Sub-Agent Actions**:
-1. Run Promptfoo with execution_plan as variable
-2. Evaluate all expected_outcomes assertions
-3. Evaluate all forbidden_outcomes assertions
-4. Collect pass/fail per assertion
-5. Log evaluator responses for llm-rubric assertions
-
-**Deterministic Assertions** (regex, contains, etc):
-- Produce identical results across runs
-- Binary pass/fail
-- No evaluator variance
-
-**Probabilistic Assertions** (llm-rubric):
-- May vary across runs (especially with temperature > 0)
-- Logged with evaluator model, temperature, raw response
-- Variance expected and measured
-
-**Output to CLI** (per run):
-```
-  ↳ Expected outcomes (<COUNT>):
-    ✓ identifies-api-server (weight: 2.0, critical: true)
-    ✓ includes-prometheus-library (weight: 1.0)
-    ✗ includes-testing-strategy (weight: 1.0)
-    ✓ considers-security (weight: 3.0)
-    
-  ↳ Forbidden outcomes (<COUNT>):
-    ✓ invents-metrics-coordinator (PASS - not violated)
-    ✗ recommends-exposing-secrets (FAIL - violated!)
-```
-
-**Logged** (per run):
-```
-[<TIMESTAMP>] INFO: Promptfoo: Evaluating <COUNT> expected outcomes
-[<TIMESTAMP>] INFO: Promptfoo: Assertion 'identifies-api-server' (llm-rubric) - PASS
-[<TIMESTAMP>] INFO: Promptfoo: Evaluator response: "The plan clearly identifies the API server component..."
-[<TIMESTAMP>] INFO: Promptfoo: Assertion 'includes-prometheus-library' (llm-rubric) - PASS
-[<TIMESTAMP>] INFO: Promptfoo: Assertion 'includes-testing-strategy' (llm-rubric) - FAIL
-[<TIMESTAMP>] INFO: Promptfoo: Evaluating <COUNT> forbidden outcomes
-[<TIMESTAMP>] INFO: Promptfoo: Forbidden 'invents-metrics-coordinator' (not-contains) - PASS (not violated)
-[<TIMESTAMP>] INFO: Promptfoo: Forbidden 'recommends-exposing-secrets' (llm-rubric) - FAIL (violated!)
-```
-
-#### Step 5: Collect Efficiency Telemetry
-
-**Purpose**: Measure execution efficiency (telemetry only, not pass/fail)
-
-**Metrics Collected**:
-- `docs_relevance_ratio`: Relevant files read / Total files read
-- `tool_efficiency_score`: Successful tool calls / Total tool calls
-- `hallucinated_file_accesses`: Attempts to read non-existent files
-- `context_efficiency`: Unique information / Total information accessed
-- `unnecessary_reads`: Files read multiple times or never used
-
-**Logged** (per run):
-```
-[<TIMESTAMP>] INFO: Efficiency Telemetry:
-[<TIMESTAMP>] INFO:   docs_relevance_ratio: <RATIO>
-[<TIMESTAMP>] INFO:   tool_efficiency_score: <SCORE>
-[<TIMESTAMP>] INFO:   hallucinated_file_accesses: <COUNT>
-[<TIMESTAMP>] INFO:   context_efficiency: <RATIO>
-[<TIMESTAMP>] INFO:   unnecessary_reads: <COUNT>
-```
-
-**Not displayed in CLI** (telemetry only)
-
-#### Step 6: Compute Run Result
-
-**Weighted Score Calculation**:
-```
-satisfied_weight = sum(weight for outcome in expected_outcomes if outcome.passed)
-total_weight = sum(weight for outcome in expected_outcomes)
-weighted_score = satisfied_weight / total_weight
-```
-
-**Run FAIL Conditions**:
-- Any critical outcome failed
-- Any forbidden outcome violated
-- Grounding validation failed
-
-**Run Result**:
-```
-if critical_failure or forbidden_violation or grounding_failure:
-    run_result = FAIL
-elif weighted_score >= pass_threshold:
-    run_result = PASS
-else:
-    run_result = FAIL
-```
-
-**Output to CLI** (per run):
-```
-Run <RUN_NUM> Result:
-  Expected outcomes: <SATISFIED>/<TOTAL>
-  Weighted score: <SCORE>/<MAX> (<PERCENT>%)
-  Critical failures: <COUNT>
-  Forbidden violations: <COUNT>
-  Grounding: <PASS/FAIL>
-  Result: <PASS/FAIL>
-```
-
-**Logged** (per run):
-```
-[<TIMESTAMP>] INFO: Run <RUN_NUM> result: weighted_score=<SCORE>, critical_failures=<COUNT>, forbidden_violations=<COUNT>, grounding=<PASS/FAIL>
-[<TIMESTAMP>] INFO: Run <RUN_NUM>: <PASS/FAIL>
-```
-
-#### Step 7: Aggregate Multi-Run Results
-
-**After all runs complete**:
-
-**Compute Aggregate Metrics**:
-- `pass_rate`: successful_runs / total_runs
-- `variance`: Standard deviation of weighted_scores across runs
-- `consistency_score`: 1 - (failed_runs / total_runs)
-- `flaky_assertions`: Assertions that pass sometimes but not always
-
-**Scenario PASS Criteria**:
-```
-pass_rate >= scenario.evaluation.pass_threshold
-AND
-no_critical_failures_in_all_runs
-```
-
-**Output to CLI**:
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Scenario <SCENARIO_ID> Aggregate Results:
-  Runs: <TOTAL>
-  Pass rate: <PASS_COUNT>/<TOTAL> (<PERCENT>%)
-  Pass threshold: <THRESHOLD>%
-  Weighted score: <AVG_SCORE> ± <VARIANCE>
-  Consistency: <CONSISTENCY_SCORE>
-  
-  Flaky assertions (<COUNT>):
-    • includes-testing-strategy (2/3 runs passed)
-  
-  Scenario result: <PASS/FAIL> ✓
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
-
-**Logged**:
-```
-[<TIMESTAMP>] INFO: Scenario <SCENARIO_ID>: Aggregating <COUNT> runs
-[<TIMESTAMP>] INFO: Pass rate: <PASS_COUNT>/<TOTAL> (<PERCENT>%)
-[<TIMESTAMP>] INFO: Weighted score: avg=<AVG>, variance=<VAR>
-[<TIMESTAMP>] INFO: Consistency score: <SCORE>
-[<TIMESTAMP>] INFO: Flaky assertions: <COUNT>
-[<TIMESTAMP>] INFO: Scenario result: <PASS/FAIL>
-[<TIMESTAMP>] INFO: Scenario <SCENARIO_ID>: COMPLETED
-```
-
-### Phase 3: Aggregate All Results
-
-**CRITICAL**: Use the display_metrics.py script to show actual results. DO NOT invent metrics.
-
-**Run this command** to display the evaluation summary:
 ```bash
-python lib/display_metrics.py <ACTUAL_METRICS_JSON_PATH>
+# Run all tests (~30-60 min)
+make eval
+
+# Run by category
+make eval-navigation
+make eval-authoring
+make eval-anti-pattern
+
+# View results in web UI
+make eval-view
+
+# Clear cache
+make eval-clean
 ```
 
-**Stratified Reporting** (by category):
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ Evaluation Complete
+### Direct Promptfoo Commands
 
-Duration: <DURATION>
+```bash
+# From plugins/agentic-docs directory
+cd plugins/agentic-docs
 
-Overall Results:
-  Scenarios: <TOTAL>
-  Passed: <PASS_COUNT> (<PERCENT>%)
-  Failed: <FAIL_COUNT>
-  
-Category Breakdown:
-  api-integration: <PASS>/<TOTAL> (<PERCENT>%)
-  concurrency: <PASS>/<TOTAL> (<PERCENT>%)
-  security: <PASS>/<TOTAL> (<PERCENT>%)
-  refactoring: <PASS>/<TOTAL> (<PERCENT>%)
-  
-Multi-Run Statistics:
-  Average runs per scenario: <AVG_RUNS>
-  Average pass rate: <AVG_PASS_RATE>%
-  Average consistency: <AVG_CONSISTENCY>%
-  Flaky scenarios: <COUNT>
+# All tests
+npx promptfoo eval -c promptfooconfig.yaml
 
-Assertion Statistics:
-  Deterministic: <COUNT> assertions (<PASS>/<TOTAL> passed)
-  Probabilistic (llm-rubric): <COUNT> assertions (<PASS>/<TOTAL> passed)
-  
-Grounding Validation:
-  Scenarios with grounding checks: <COUNT>
-  Grounding failures: <COUNT>
-  Hallucinated components detected: <COUNT>
+# Filtered by category
+npx promptfoo eval -c promptfooconfig.yaml --filter-description "Navigation:"
 
-Forbidden Outcomes:
-  Scenarios with forbidden checks: <COUNT>
-  Forbidden violations: <COUNT>
-
-Efficiency Telemetry (avg):
-  docs_relevance_ratio: <RATIO>
-  tool_efficiency_score: <SCORE>
-  hallucinated_file_accesses: <COUNT>
-
-Evaluator:
-  Model: <MODEL>
-  Temperature: <TEMP>
-  Prompt version: <PROMPT_VERSION>
-  Calibration accuracy: <PERCENT>%
-
-Log file: <LOG_PATH>
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# View results
+npx promptfoo view
 ```
 
-**Metrics grounding**: All values come from actual metrics JSON file. NO INVENTED NUMBERS.
+## Required Output Format
 
-## Leakage Resistance
+All coding agent responses MUST include:
 
-### Opaque Scenario IDs
+```markdown
+## Documentation Used
 
-**Problem**: Descriptive IDs like `add-monitoring-endpoint` leak evaluation intent
-
-**Solution**: Use opaque IDs like `scenario-014`
+- <file-path> - <why-used>
+- <file-path> - <why-used>
+...
+```
 
 **Example**:
+```markdown
+## Documentation Used
+
+- CLAUDE.md - Entry point discovered naturally, provided navigation to enhancement docs
+- ai-docs/API_CONVENTIONS.md - Referenced for API versioning, found v1alpha1 requirement
+- ai-docs/OPERATORS.md - Consulted for standard ClusterOperator status conditions
+```
+
+This section is evidence of:
+- Natural documentation discovery (not prompted compliance)
+- Correct navigation through documentation
+- Grounding in documented patterns
+
+## Scoring Model
+
+**Promptfoo-Native Assertions Only**
+
+### Deterministic Assertions
+- `icontains`: Case-insensitive substring match
+- `contains-any`: Match any value from list
+- `not-icontains`: Negation (for anti-patterns)
+
+### LLM-Based Assertions
+- `llm-rubric`: Semantic evaluation by Claude
+
+### Weights
+Every assertion has explicit weight in `promptfooconfig.yaml`:
+
 ```yaml
-# Bad: reveals intent
-id: "add-monitoring-endpoint"
+assert:
+  - type: icontains
+    value: "## Documentation Used"
+    weight: 3.0  # Critical section
 
-# Good: opaque
-id: "scenario-014"
+  - type: llm-rubric
+    value: "Response rejects starting API at v1"
+    weight: 5.0  # Anti-pattern tests have high weight
 ```
 
-### Sandbox Isolation
+Promptfoo computes weighted scores. Judge interprets results.
 
-**Problem**: Coding sub-agent could access test scenarios
+## Documentation-First Natural Discovery
 
-**Solution**: Sandbox coding sub-agent to prevent filesystem access to:
-- `tests/benchmark/`
-- `promptfooconfig.yaml`
-- `.work/evaluate/`
+**Critical Design Principle**:
 
-**Implementation**: Judge sub-agent spawns coding sub-agent with restricted filesystem permissions
+> Agents are NOT instructed to read CLAUDE.md or ai-docs/.  
+> Success depends on whether agents naturally discover and use documentation.
 
-### Adversarial Scenarios
+This evaluates **real agentic behavior**, not prompted compliance.
 
-**Purpose**: Test leakage resistance
+**What this tests**:
+- Is documentation discoverable?
+- Does CLAUDE.md work as an entry point?
+- Can agents navigate documentation structure?
+- Do agents apply guidance correctly?
 
-**Characteristics**:
-- Misleading scenario IDs
-- Decoy documentation
-- Irrelevant context
-- Intentionally ambiguous wording
+**What this does NOT test**:
+- Can agents follow explicit instructions to read specific files?
+- Can agents comply when told what to reference?
 
-**Example**:
-```yaml
-scenario:
-  id: "scenario-099"  # Opaque, no hint
-  description: "Adversarial leakage resistance test"
-  input:
-    task_description: "Improve system performance"
-    context:
-      - "The system uses a message queue"  # Decoy: actually needs caching
-      - "Latency is a concern"  # Ambiguous
+## Success Criteria
+
+### Per-Category Requirements
+
+**Navigation**: All navigation tests must pass
+- Agent discovers documentation naturally
+- Agent includes "## Documentation Used" section
+- Agent references specific files
+
+**Authoring**: All authoring tests must pass
+- API starts at v1alpha1 (not v1)
+- Uses standard ClusterOperator conditions
+- Includes graduation criteria
+- References documentation
+
+**Anti-Patterns**: ALL anti-pattern tests must pass (zero tolerance)
+- Rejects starting API at v1
+- Rejects custom ClusterOperator conditions
+- Rejects breaking changes without deprecation
+
+### Overall PASS Criteria
+
+```
+✅ Navigation: 2/2 passed
+✅ Authoring: 1/1 passed
+✅ Anti-patterns: 3/3 passed
 ```
 
-## Assertion Diversification
+**Any anti-pattern failure = FAIL** (critical requirement)
 
-**Purpose**: Reduce benchmark memorization and keyword gaming
+## Example Report
 
-**Implementation**: For each assertion, maintain multiple semantically equivalent phrasings
+Judge interprets promptfoo results:
 
-**Example**:
-```yaml
-assertion_variants:
-  includes-testing-strategy:
-    - "llm-rubric: The plan includes a testing strategy"
-    - "llm-rubric: The plan discusses endpoint validation"
-    - "llm-rubric: The plan proposes verification approach"
-    - "llm-rubric: The plan addresses testing considerations"
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 Evaluation Results
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Overall: 6/6 tests passed ✅
+
+Navigation Tests: ✅ 2/2
+- Enhancement process discovery: PASS
+  Agent naturally discovered CLAUDE.md and navigated to enhancement docs
+
+- Operator pattern location: PASS
+  Agent found operator documentation and referenced specific sections
+
+Authoring Tests: ✅ 1/1
+- ClusterPowerScheduler design: PASS
+  * Started API at v1alpha1 ✓
+  * Used Available/Progressing/Degraded conditions ✓
+  * Included alpha → beta → stable graduation ✓
+  * Referenced ai-docs/API_CONVENTIONS.md ✓
+
+Anti-Pattern Tests: ✅ 3/3
+- Reject v1 API start: PASS
+  Agent correctly rejected starting at v1, required v1alpha1
+
+- Reject custom conditions: PASS
+  Agent rejected "Ready/Healthy/Operating", required standard conditions
+
+- Reject breaking changes: PASS
+  Agent rejected field rename without deprecation process
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ EVALUATION PASSED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+All tests passed. Documentation enables:
+✓ Natural discovery behavior
+✓ Correct OpenShift convention application
+✓ Anti-pattern rejection
+
+View detailed results: make eval-view
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
-**Evaluation**: Randomly select one variant per run
+## Prerequisites
 
-**Benefits**:
-- Prevents overfitting to specific phrasing
-- Tests semantic understanding, not keyword matching
-- Improves robustness
+- **Node.js**: 22.22.0+ or 20.20.0+
+- **API Key**: ANTHROPIC_API_KEY or ANTHROPIC_VERTEX_PROJECT_ID
 
-## Efficiency Telemetry
+## Working Directory
 
-**Purpose**: Measure execution efficiency without affecting pass/fail
+All commands execute from `plugins/agentic-docs/`:
 
-**Metrics**:
-
-### docs_relevance_ratio
-```
-relevant_files_read / total_files_read
-```
-- Measures how targeted documentation access is
-- Low score indicates excessive exploration
-- High score indicates efficient retrieval
-
-### tool_efficiency_score
-```
-successful_tool_calls / total_tool_calls
-```
-- Measures tool usage effectiveness
-- Low score indicates trial-and-error behavior
-- High score indicates precise tool usage
-
-### hallucinated_file_accesses
-```
-count(read_attempts for non-existent files)
-```
-- Detects attempts to access fabricated files
-- Indicates hallucination or poor documentation understanding
-
-### context_efficiency
-```
-unique_information_accessed / total_information_accessed
-```
-- Measures redundancy in information access
-- Low score indicates repeated reads of same content
-- High score indicates efficient context building
-
-### unnecessary_reads
-```
-count(files read but not referenced in plan)
-```
-- Detects irrelevant documentation access
-- High count indicates poor retrieval strategy
-
-**Important**: These are telemetry only, NOT pass/fail criteria
-
-## Evaluator Calibration
-
-**Purpose**: Detect evaluator drift and validate scoring consistency
-
-**Calibration Set**: `tests/benchmark/calibration/*.yaml`
-
-**Characteristics**:
-- Fixed scenarios with known-good outputs
-- Never modified
-- Run on every evaluation
-- Expected pass rate: ≥95%
-
-**If Calibration Fails**:
-```
-❌ Calibration Failed
-
-Pass rate: <RATE>% (expected ≥95%)
-
-Possible causes:
-  - Evaluator model changed
-  - Prompt version mismatch
-  - Temperature setting incorrect
-  - Evaluator drift detected
-
-Aborting evaluation.
-```
-
-**Logged Calibration Metadata**:
-```json
-{
-  "calibration": {
-    "scenarios": 10,
-    "expected_pass_rate": 0.95,
-    "actual_pass_rate": 0.94,
-    "drift_detected": false,
-    "evaluator": {
-      "model": "claude-sonnet-4-6",
-      "temperature": 0.0,
-      "prompt_version": "v2.1"
-    }
-  }
-}
+```bash
+working_dir: plugins/agentic-docs
+config: plugins/agentic-docs/promptfooconfig.yaml
+results: plugins/agentic-docs/.work/eval/results.json
 ```
 
 ## Error Handling
 
-### Calibration Failure
+### Missing "## Documentation Used" Section
 
-If calibration pass rate < 95%:
 ```
-❌ Calibration Failed
+❌ Test Failed: nav-001
 
-Pass rate: <RATE>% (expected ≥95%)
+Assertion: icontains "## Documentation Used"
+Result: FAIL
 
-Aborting evaluation until calibration is resolved.
-```
+Agent response did not include required "## Documentation Used" section.
 
-### Grounding Failure
+This indicates documentation discovery failed or output format was not followed.
 
-If grounding validation fails:
-```
-❌ Grounding Failure: Scenario <SCENARIO_ID>
-
-Hallucinated components:
-  • MetricsCoordinatorService (not documented)
-  • LegacyMonitoringService (deprecated)
-
-Required components missing:
-  • api-server
-
-Scenario result: FAIL
+Recommendation: Verify coding agent includes documentation section in all responses.
 ```
 
-### Forbidden Outcome Violation
+### Anti-Pattern Acceptance
 
-If forbidden outcome violated:
 ```
-❌ Forbidden Outcome Violated: Scenario <SCENARIO_ID>
+❌ CRITICAL FAILURE: Anti-pattern test failed
 
-Violation: recommends-exposing-secrets
-Description: Plan must not recommend exposing sensitive data
+Test: anti-001 - Reject starting API at v1
+Expected: Agent rejects v1 start, requires v1alpha1
+Actual: Agent approved starting at v1
 
-Scenario result: FAIL
+Evidence: Response stated "starting at v1 is acceptable if you're confident"
+
+This violates OpenShift API graduation requirements.
+
+Recommendation: Strengthen documentation about API versioning and graduation process.
 ```
 
-## Success Criteria
+### Promptfoo Execution Failure
 
-Scenario PASS requires:
-- ✅ Pass rate ≥ pass_threshold
-- ✅ No critical outcome failures
-- ✅ No forbidden outcome violations
-- ✅ Grounding validation passed
-- ✅ No hallucinated components
+```
+❌ Promptfoo Evaluation Failed
 
-Evaluation PASS requires:
-- ✅ Calibration pass rate ≥95%
-- ✅ Overall scenario pass rate ≥70%
-- ✅ All categories have ≥50% pass rate
+Command: promptfoo eval -c promptfooconfig.yaml
+Exit code: 1
 
-## Metrics Source Table
+Error: Provider configuration invalid
 
-| Field | Source | Location |
-|-------|--------|----------|
-| Duration | MetricsLogger.duration_ms | `*.metrics.json`: `duration_ms` field |
-| Scenarios | MetricsLogger.details.scenarios | `*.metrics.json`: `details.scenarios` |
-| Pass/Fail Counts | MetricsLogger.details.results | `*.metrics.json`: `details.results` |
-| Category Breakdown | MetricsLogger.details.categories | `*.metrics.json`: `details.categories` |
-| Multi-Run Stats | MetricsLogger.details.multi_run | `*.metrics.json`: `details.multi_run` |
-| Grounding Stats | MetricsLogger.details.grounding | `*.metrics.json`: `details.grounding` |
-| Evaluator Config | MetricsLogger.details.evaluator | `*.metrics.json`: `details.evaluator` |
+Fix promptfooconfig.yaml provider settings and retry.
+```
 
-## Logging Implementation
+## Reproducibility
 
-Uses **`lib/metrics_logger.py`** for comprehensive logging:
-- Real-time logging to CLI
-- Persistent logging to `logs/agentic-docs-evaluate-{timestamp}.log`
-- Metrics JSON export to `logs/agentic-docs-evaluate-{timestamp}.metrics.json`
-- Key decision logging at each phase
-- Evaluator metadata logging
-- Calibration results logging
+All evaluations are:
+- Executable from repository root
+- Defined in single promptfooconfig.yaml
+- Repeatable with `make eval`
+- Filterable by category
+- Viewable with `promptfoo view`
 
-See [lib/METRICS_LOGGER_USAGE.md](../../lib/METRICS_LOGGER_USAGE.md) for usage guide.
+Deterministic assertions (`icontains`, `contains-any`) produce identical results.  
+LLM-rubric assertions may vary slightly with temperature > 0.
+
+## Agent Implementation
+
+See agent documentation:
+- `agents/coding-agent.md` - Coding sub-agent (natural discovery)
+- `agents/judge-agent.md` - Claude Judge (interpret promptfoo results)
+- `agents/main-orchestrator.md` - Orchestration logic
+
+## Deprecated Components
+
+The following v2.0 components are deprecated:
+- Custom MetricsLogger (`lib/metrics_logger.py`)
+- Custom aggregation engine
+- Multi-run variance testing
+- Efficiency telemetry
+- Custom grounding validator
+
+See `lib/DEPRECATED.md` for migration guide.
+
+All evaluation now uses **promptfoo only**.
 
 ## Version History
 
+**v3.0** (2026-05-14):
+- **BREAKING**: Migration to promptfoo-only evaluation
+- Single unified promptfooconfig.yaml at repository root
+- Removed custom evaluation harnesses
+- Aligned with OpenShift Enhancements framework
+- Three test categories: Navigation, Authoring, Anti-patterns
+- Documentation-first natural discovery
+- Required "## Documentation Used" sections
+- Make targets for execution
+- Claude Judge interprets promptfoo outputs only
+
 **v2.0** (2026-05-09):
-- Added forbidden_outcomes support
-- Added grounding validation (hallucination detection)
-- Added multi-run variance testing
-- Added weighted scoring and critical outcomes
-- Added assertion diversification
-- Added efficiency telemetry
-- Added category stratification
-- Added evaluator calibration
-- Distinguished deterministic vs probabilistic assertions
-- Implemented sandbox isolation
-- Implemented opaque scenario IDs
-- Enhanced leakage resistance
+- [Deprecated] Multi-run variance testing
+- [Deprecated] Custom MetricsLogger
+- [Deprecated] Grounding validation
+- [Deprecated] Efficiency telemetry
 
 **v1.0** (2026-05-08):
 - Initial behavioral validation framework
-- Strict agent separation
-- Promptfoo integration
-- Expected outcomes only

@@ -6,15 +6,28 @@ Reads a metrics JSON file and displays a formatted summary to stdout.
 This script is the SINGLE SOURCE OF TRUTH for metrics display - prevents
 hallucinated numbers in CLI output.
 
+CRITICAL: Validates metrics before display to ensure no incorrect or placeholder
+values are shown to users (PR #450 approach).
+
 Usage:
     python lib/display_metrics.py <metrics-json-file>
     python lib/display_metrics.py logs/agentic-docs-create-2026-05-09.metrics.json
+    python lib/display_metrics.py <metrics-json-file> --strict  # Fail on validation errors
 """
 
 import sys
 import json
 from pathlib import Path
 from typing import Dict, Any, Optional
+
+# Import metrics validator
+try:
+    from .metrics.metrics_validator import MetricsValidator
+except ImportError:
+    # Try relative import if running as script
+    import os
+    sys.path.insert(0, str(Path(__file__).parent))
+    from metrics.metrics_validator import MetricsValidator
 
 
 def format_duration(duration_ms: Optional[float]) -> str:
@@ -127,17 +140,49 @@ def display_summary(metrics: Dict[str, Any]) -> None:
 
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python lib/display_metrics.py <metrics-json-file>", file=sys.stderr)
+    # Parse arguments
+    strict_mode = "--strict" in sys.argv
+    args = [arg for arg in sys.argv[1:] if not arg.startswith("--")]
+
+    if len(args) != 1:
+        print("Usage: python lib/display_metrics.py <metrics-json-file> [--strict]", file=sys.stderr)
+        print("\nOptions:", file=sys.stderr)
+        print("  --strict    Fail on any validation error (default: warn only)", file=sys.stderr)
         print("\nExample:", file=sys.stderr)
         print("  python lib/display_metrics.py logs/agentic-docs-create-2026-05-09.metrics.json", file=sys.stderr)
+        print("  python lib/display_metrics.py logs/agentic-docs-create-2026-05-09.metrics.json --strict", file=sys.stderr)
         sys.exit(1)
 
-    metrics_file = Path(sys.argv[1])
+    metrics_file = Path(args[0])
 
     if not metrics_file.exists():
         print(f"Error: Metrics file not found: {metrics_file}", file=sys.stderr)
         sys.exit(1)
+
+    # CRITICAL: Validate metrics before loading and displaying (PR #450)
+    print("🔍 Validating metrics integrity...", file=sys.stderr)
+    is_valid, errors = MetricsValidator.validate_metrics_file(metrics_file)
+
+    if not is_valid:
+        print("\n❌ Metrics Validation Failed\n", file=sys.stderr)
+        print(f"Metrics file: {metrics_file}\n", file=sys.stderr)
+        print("Validation errors:", file=sys.stderr)
+        for error in errors:
+            print(f"  • {error}", file=sys.stderr)
+        print("\n" + "="*70, file=sys.stderr)
+        print("CRITICAL: Metrics contain invalid or placeholder values.", file=sys.stderr)
+        print("This indicates metrics were not properly derived from actual execution.", file=sys.stderr)
+        print("\nMetrics MUST be:", file=sys.stderr)
+        print("  • Derived directly from execution outputs", file=sys.stderr)
+        print("  • Consistently reproducible", file=sys.stderr)
+        print("  • Fully verified and accurate", file=sys.stderr)
+        print("\nDo NOT display potentially incorrect metrics to users.", file=sys.stderr)
+        print("="*70 + "\n", file=sys.stderr)
+
+        if strict_mode:
+            sys.exit(1)
+        else:
+            print("⚠️  WARNING: Continuing in non-strict mode, but metrics may be incorrect.\n", file=sys.stderr)
 
     try:
         with open(metrics_file) as f:
@@ -148,6 +193,9 @@ def main():
 
     # Store log file path for display
     metrics["_log_file"] = str(metrics_file).replace(".metrics.json", ".log")
+
+    if is_valid:
+        print("✅ Metrics validation passed\n", file=sys.stderr)
 
     display_summary(metrics)
 
