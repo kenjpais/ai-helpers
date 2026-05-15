@@ -1324,7 +1324,14 @@
       "version": "0.0.2"
     },
     {
-      "commands": [],
+      "commands": [
+        {
+          "argument_hint": "[-scan] [-project <name>] [-session <path>]",
+          "description": "Analyze Claude Code session logs for ai-docs usage patterns",
+          "name": "ai-docs-telemetry",
+          "synopsis": "/metrics:ai-docs-telemetry -scan [-project <name>]"
+        }
+      ],
       "description": "Anonymous metrics usage for ai-helpers",
       "has_readme": true,
       "hooks": [
@@ -1824,9 +1831,28 @@
       "version": "0.1.2"
     },
     {
-      "commands": [],
+      "commands": [
+        {
+          "argument_hint": "[repository-path]",
+          "description": "Create lean component documentation for OpenShift component repositories",
+          "name": "component",
+          "synopsis": "/agentic-docs:component [repository-path]"
+        },
+        {
+          "argument_hint": "[repository-path]",
+          "description": "Evaluate agentic documentation quality using promptfoo-based behavioral validation",
+          "name": "evaluate",
+          "synopsis": "/agentic-docs:evaluate [repository-path]"
+        },
+        {
+          "argument_hint": "[repository-path]",
+          "description": "Generate repository-specific promptfoo evaluation suites for OpenShift documentation",
+          "name": "generate-evals",
+          "synopsis": "/agentic-docs:generate-evals [repository-path]"
+        }
+      ],
       "description": "Create and maintain AI-optimized documentation for OpenShift",
-      "has_readme": true,
+      "has_readme": false,
       "hooks": [],
       "name": "agentic-docs",
       "skills": [
@@ -1836,12 +1862,22 @@
           "name": "component-docs"
         },
         {
+          "description": "Evaluate agentic documentation quality using promptfoo-based behavioral validation with natural discovery testing. Use this skill when users want to test if AI agents can find and use documentation, run evaluation tests, check documentation quality, or see which documentation files are most accessed. Trigger on phrases like 'evaluate documentation', 'run evaluation', 'test the docs', 'check if agents can find the documentation', or 'see what files are accessed'.",
+          "id": "evaluate",
+          "name": "agentic-docs:evaluate"
+        },
+        {
+          "description": "Generate repository-specific promptfoo evaluation suites tailored to OpenShift conventions and repository patterns",
+          "id": "generate-evals",
+          "name": "agentic-docs:generate-evals"
+        },
+        {
           "description": "Update existing platform documentation with automatic gap detection in openshift/enhancements",
           "id": "update-platform-docs",
           "name": "update-platform-docs"
         }
       ],
-      "version": "1.0.0"
+      "version": "1.1.0"
     }
   ]
 }
