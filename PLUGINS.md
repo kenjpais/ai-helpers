@@ -3,6 +3,7 @@
 This document lists all available Claude Code plugins and their commands in the ai-helpers repository.
 
 - [Agendas](#agendas-plugin)
+- [Agentic Docs](#agentic-docs-plugin)
 - [Operator Dashboard](#operator-dashboard-plugin)
 - [Bigquery](#bigquery-plugin)
 - [Ci](#ci-plugin)
@@ -18,6 +19,7 @@ This document lists all available Claude Code plugins and their commands in the 
 - [Jira](#jira-plugin)
 - [Lvms](#lvms-plugin)
 - [Marketplace Ops](#marketplace-ops-plugin)
+- [Metrics](#metrics-plugin)
 - [Must Gather](#must-gather-plugin)
 - [Node](#node-plugin)
 - [Node Tuning](#node-tuning-plugin)
@@ -46,6 +48,15 @@ A plugin to create various meeting agendas
 - **`/agendas:outcome-refinement`** - Analyze the list of JIRA outcome issues to prepare an outcome refinement meeting agenda.
 
 See [plugins/agendas/README.md](plugins/agendas/README.md) for detailed documentation.
+
+### Agentic Docs Plugin
+
+Create and maintain AI-optimized documentation for OpenShift
+
+**Commands:**
+- **`/agentic-docs:component` `[repository-path]`** - Create lean component documentation for OpenShift component repositories
+- **`/agentic-docs:evaluate` `[repository-path]`** - Evaluate agentic documentation quality using promptfoo-based behavioral validation
+- **`/agentic-docs:generate-evals` `[repository-path]`** - Generate repository-specific promptfoo evaluation suites for OpenShift documentation
 
 ### Operator Dashboard Plugin
 
@@ -237,6 +248,15 @@ Maintenance commands for Claude Code plugin marketplaces
 - **`/marketplace-ops:prune` `[--dry-run]`** - Analyze and prune stale plugins, commands, and skills from the marketplace
 
 See [plugins/marketplace-ops/README.md](plugins/marketplace-ops/README.md) for detailed documentation.
+
+### Metrics Plugin
+
+Anonymous metrics usage for ai-helpers
+
+**Commands:**
+- **`/metrics:ai-docs-telemetry` `[-scan] [-project <name>] [-session <path>]`** - Analyze Claude Code session logs for ai-docs usage patterns
+
+See [plugins/metrics/README.md](plugins/metrics/README.md) for detailed documentation.
 
 ### Must Gather Plugin
 
