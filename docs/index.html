@@ -415,10 +415,47 @@ footer a { color: var(--primary); }
     {
       "name": "agentic-docs",
       "description": "Create and maintain AI-optimized documentation for OpenShift",
-      "version": "1.0.0",
-      "has_readme": true,
-      "commands": [],
+      "version": "1.1.0",
+      "has_readme": false,
+      "commands": [
+        {
+          "name": "component",
+          "full_name": "agentic-docs:component",
+          "description": "Create lean component documentation for OpenShift component repositories",
+          "description_html": "Create lean component documentation for OpenShift component repositories",
+          "synopsis": "/agentic-docs:component [repository-path]",
+          "body_html": "\u003cp\u003eThe \u003ccode\u003eagentic-docs:component\u003c/code\u003e command creates lean component documentation for OpenShift component repositories following the two-tier architecture pattern where generic patterns live in the platform hub and only component-specific knowledge is documented locally.\u003c/p\u003e\u003cp\u003eThis command implements the philosophy: &quot;Component docs contain ONLY component-specific knowledge.&quot; Generic platform patterns (operator patterns, testing practices, security guidelines) live in the platform hub (openshift/enhancements/ai-docs/) and are referenced, not duplicated.\u003c/p\u003e\u003cp\u003eThe command generates:\u003cbr\u003e- \u003ccode\u003eAGENTS.md\u003c/code\u003e - Master entry point (80-100 lines)\u003cbr\u003e- \u003ccode\u003eai-docs/domain/\u003c/code\u003e - Component-specific CRDs only\u003cbr\u003e- \u003ccode\u003eai-docs/architecture/components.md\u003c/code\u003e - Component internals\u003cbr\u003e- \u003ccode\u003eai-docs/decisions/\u003c/code\u003e - Component-specific ADRs\u003cbr\u003e- \u003ccode\u003eai-docs/exec-plans/\u003c/code\u003e - Active feature implementation plans\u003cbr\u003e- \u003ccode\u003eai-docs/references/ecosystem.md\u003c/code\u003e - Links to platform docs\u003cbr\u003e- \u003ccode\u003e[COMPONENT]_DEVELOPMENT.md\u003c/code\u003e - Component-specific development guidance\u003cbr\u003e- \u003ccode\u003e[COMPONENT]_TESTING.md\u003c/code\u003e - Component-specific testing guidance\u003c/p\u003e"
+        },
+        {
+          "name": "evaluate",
+          "full_name": "agentic-docs:evaluate",
+          "description": "Evaluate agentic documentation quality using promptfoo-based behavioral validation",
+          "description_html": "Evaluate agentic documentation quality using promptfoo-based behavioral validation",
+          "synopsis": "/agentic-docs:evaluate [repository-path]",
+          "body_html": "\u003cp\u003eThe \u003ccode\u003eagentic-docs:evaluate\u003c/code\u003e command evaluates documentation quality by testing whether AI agents naturally discover and correctly apply repository conventions without being explicitly told to read documentation.\u003c/p\u003e\u003cp\u003eThis command validates \u003cstrong\u003edocumentation-first natural discovery behavior\u003c/strong\u003e using the OpenShift Enhancements Agentic Docs Evaluation framework. It measures:\u003cbr\u003e- \u003cstrong\u003eNatural discovery\u003c/strong\u003e: Does the agent find documentation without instruction?\u003cbr\u003e- \u003cstrong\u003eCorrect navigation\u003c/strong\u003e: Does the agent follow documentation structure?\u003cbr\u003e- \u003cstrong\u003ePattern application\u003c/strong\u003e: Does the agent apply repository conventions correctly?\u003cbr\u003e- \u003cstrong\u003eAnti-pattern rejection\u003c/strong\u003e: Does the agent reject incorrect patterns?\u003c/p\u003e\u003cp\u003eThe evaluation uses promptfoo to run assertions from \u003ccode\u003epromptfooconfig.yaml\u003c/code\u003e and generates detailed HTML reports with pass/fail grades.\u003c/p\u003e"
+        },
+        {
+          "name": "generate-evals",
+          "full_name": "agentic-docs:generate-evals",
+          "description": "Generate repository-specific promptfoo evaluation suites for OpenShift documentation",
+          "description_html": "Generate repository-specific promptfoo evaluation suites for OpenShift documentation",
+          "synopsis": "/agentic-docs:generate-evals [repository-path]",
+          "body_html": "\u003cp\u003eThe \u003ccode\u003eagentic-docs:generate-evals\u003c/code\u003e command generates a tailored \u003ccode\u003epromptfooconfig.yaml\u003c/code\u003e evaluation suite for a specific OpenShift repository. Instead of using a generic evaluation configuration, it analyzes the repository&#x27;s documentation structure, code patterns, and conventions to create repository-specific test cases.\u003c/p\u003e\u003cp\u003eThe generated evaluation suite tests whether AI agents can:\u003cbr\u003e- Naturally discover repository documentation\u003cbr\u003e- Apply repository-specific patterns correctly\u003cbr\u003e- Follow established conventions without explicit instruction\u003cbr\u003e- Reject anti-patterns specific to the repository\u003c/p\u003e\u003cp\u003eThis follows the OpenShift Enhancements Agentic Docs Evaluation framework, which emphasizes documentation-first natural discovery.\u003c/p\u003e"
+        }
+      ],
       "skills": [
+        {
+          "name": "agentic-docs:evaluate",
+          "description": "Evaluate agentic documentation quality using promptfoo-based behavioral validation with natural discovery testing. Use this skill when users want to test if AI agents can find and use documentation, run evaluation tests, check documentation quality, or see which documentation files are most accessed. Trigger on phrases like 'evaluate documentation', 'run evaluation', 'test the docs', 'check if agents can find the documentation', or 'see what files are accessed'.",
+          "description_html": "Evaluate agentic documentation quality using promptfoo-based behavioral validation with natural discovery testing. Use this skill when users want to test if AI agents can find and use documentation, run evaluation tests, check documentation quality, or see which documentation files are most accessed. Trigger on phrases like &#x27;evaluate documentation&#x27;, &#x27;run evaluation&#x27;, &#x27;test the docs&#x27;, &#x27;check if agents can find the documentation&#x27;, or &#x27;see what files are accessed&#x27;.",
+          "meta": ""
+        },
+        {
+          "name": "agentic-docs:generate-evals",
+          "description": "Generate repository-specific promptfoo evaluation suites tailored to OpenShift conventions and repository patterns",
+          "description_html": "Generate repository-specific promptfoo evaluation suites tailored to OpenShift conventions and repository patterns",
+          "meta": ""
+        },
         {
           "name": "component-docs",
           "description": "Create lean component documentation for OpenShift repositories",
@@ -1713,6 +1750,43 @@ footer a { color: var(--primary); }
       "author": {
         "name": "github.com/openshift-eng"
       }
+    },
+    {
+      "name": "metrics",
+      "description": "",
+      "version": "",
+      "has_readme": true,
+      "commands": [
+        {
+          "name": "ai-docs-telemetry",
+          "full_name": "metrics:ai-docs-telemetry",
+          "description": "Analyze Claude Code session logs for ai-docs usage patterns",
+          "description_html": "Analyze Claude Code session logs for ai-docs usage patterns",
+          "synopsis": "/metrics:ai-docs-telemetry -scan [-project \u003cname\u003e]\n/metrics:ai-docs-telemetry -session \u003cpath-to-session.jsonl\u003e",
+          "body_html": "\u003cp\u003eThe \u003ccode\u003emetrics:ai-docs-telemetry\u003c/code\u003e command analyzes Claude Code session logs to track how agentic documentation (ai-docs) is used during development. It parses session JSONL files to extract Read tool calls to ai-docs files and generates telemetry events.\u003c/p\u003e\u003cp\u003eThis helps measure:\u003cbr\u003e- Documentation effectiveness and usage patterns\u003cbr\u003e- Which files are accessed most frequently\u003cbr\u003e- Entry points for documentation discovery (AGENTS.md, direct search, etc.)\u003cbr\u003e- Navigation paths through documentation\u003c/p\u003e\u003cp\u003eAll output is JSON to stdout, making it easy to pipe to \u003ccode\u003ejq\u003c/code\u003e for analysis.\u003c/p\u003e"
+        }
+      ],
+      "skills": [],
+      "agents": [],
+      "hooks": [
+        {
+          "event_type": "PreToolUse",
+          "matcher": "Skill",
+          "hooks_json": "[\n  {\n    \"command\": \"${CLAUDE_PLUGIN_ROOT}/scripts/send_metrics.py\",\n    \"timeout\": 30,\n    \"type\": \"command\"\n  }\n]"
+        },
+        {
+          "event_type": "SessionEnd",
+          "matcher": ".*",
+          "hooks_json": "[\n  {\n    \"command\": \"${CLAUDE_PLUGIN_ROOT}/scripts/send_session_metrics.py\",\n    \"timeout\": 30,\n    \"type\": \"command\"\n  }\n]"
+        },
+        {
+          "event_type": "UserPromptSubmit",
+          "matcher": ".*",
+          "hooks_json": "[\n  {\n    \"command\": \"${CLAUDE_PLUGIN_ROOT}/scripts/send_metrics.py\",\n    \"timeout\": 30,\n    \"type\": \"command\"\n  }\n]"
+        }
+      ],
+      "mcp_servers": [],
+      "rules": []
     },
     {
       "name": "must-gather",
