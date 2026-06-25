@@ -75,6 +75,20 @@ processors:
           - set(span.attributes["graph.node.id"], span.attributes["agent_id"])               where span.attributes["agent_id"] != nil
           - set(span.attributes["graph.node.parent_id"], span.attributes["parent_agent_id"]) where span.attributes["parent_agent_id"] != nil
 
+          # MLflow input.value: populated from the user prompt on interaction spans
+          # and from the tool command on tool spans.
+          - set(span.attributes["input.value"], span.attributes["user_prompt"]) where span.attributes["user_prompt"] != nil
+          - set(span.attributes["input.value"], span.attributes["full_command"]) where span.attributes["full_command"] != nil
+
+      # MLflow output.value: Claude Code emits tool results as span events named
+      # "tool.output", not as span attributes, so they must be extracted here.
+      # (Note: LLM response text is never emitted by Claude Code — output.value
+      # will remain unset on interaction and llm_request spans.)
+      - context: spanevent
+        statements:
+          - set(span.attributes["output.value"], attributes["output"])  where name == "tool.output" and attributes["output"] != nil
+          - set(span.attributes["output.value"], attributes["content"]) where name == "tool.output" and attributes["content"] != nil
+
   batch:
     timeout: 5s
     send_batch_size: 512
