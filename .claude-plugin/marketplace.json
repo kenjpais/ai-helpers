@@ -63,7 +63,7 @@
       "name": "hello-world",
       "source": "./plugins/hello-world",
       "description": "Hello World Plugin",
-      "version": "1.0.2",
+      "version": "1.0.3",
       "category": "tooling",
       "keywords": [
         "example",
@@ -75,7 +75,7 @@
       "name": "jira",
       "source": "./plugins/jira",
       "description": "A plugin to automate tasks with Jira",
-      "version": "0.7.2",
+      "version": "0.8.1",
       "category": "productivity",
       "keywords": [
         "jira",
@@ -88,7 +88,7 @@
       "name": "ci",
       "source": "./plugins/ci",
       "description": "A plugin to work with OpenShift CI and analyze Prow job results",
-      "version": "0.0.53",
+      "version": "0.0.54",
       "category": "ci",
       "keywords": [
         "prow",
@@ -348,7 +348,7 @@
       "name": "code-review",
       "source": "./plugins/code-review",
       "description": "Automated code quality review with language-aware analysis for pre-commit verification",
-      "version": "0.0.10",
+      "version": "0.0.11",
       "category": "development",
       "keywords": [
         "code-review",
@@ -435,7 +435,7 @@
       "name": "openshift-developer",
       "source": "./plugins/openshift-developer",
       "description": "Bundle of curated plugins, skills, and MCP servers useful to any OpenShift engineer",
-      "version": "1.1.4",
+      "version": "1.1.5",
       "category": "bundle",
       "keywords": [
         "openshift",
